@@ -176,6 +176,14 @@ tableextension 50200 "Project EXT" extends Job
         }
     }
 
+    trigger OnInsert()
+    var
+        ProjectDimensionMgt: Codeunit "Project Dimension Management";
+    begin
+        if "No." <> '' then
+            ProjectDimensionMgt.CreateProjectDimensions("No.");
+    end;
+
     Procedure CheckOpenActivities()
     var
         Activity: Record AANActivity;

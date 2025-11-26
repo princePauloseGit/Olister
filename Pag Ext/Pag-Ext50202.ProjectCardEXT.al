@@ -280,8 +280,15 @@ pageextension 50202 "Project Card EXT" extends "Job Card"
 
 
             }
-            actionref(Products_Promoted; Products)
-            { }
+            group(ProductsGroup_Promoted)
+            {
+                Caption = 'Products';
+                Image = Item;
+                actionref(Products_Promoted; Products)
+                { }
+                actionref(ProjectProducts_Promoted; ProjectProducts)
+                { }
+            }
         }
         addafter(CreatePurchaseOrder)
 
@@ -544,13 +551,33 @@ pageextension 50202 "Project Card EXT" extends "Job Card"
                 }
 
             }
-            action(Products)
+            group(ProductsGroup)
             {
                 Caption = 'Products';
-                ApplicationArea = all;
                 Image = Item;
-                RunObject = page "Item List";
+                action(Products)
+                {
+                    Caption = 'All Products';
+                    ApplicationArea = all;
+                    Image = Item;
+                    RunObject = page "Item List";
+                }
+                action(ProjectProducts)
+                {
+                    Caption = 'Project Products';
+                    ApplicationArea = all;
+                    Image = Item;
+                    trigger OnAction()
+                    var
+                        Item: Record Item;
+                    begin
+                        if Rec."Item No" <> '' then
+                            Item.SetFilter("No.", Rec."Item No");
+                        Page.Run(Page::"Item List", Item);
+                    end;
+                }
             }
+
         }
 
         addlast(Promoted)
