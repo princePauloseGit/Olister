@@ -6,7 +6,7 @@ page 50202 "Activity Type List"
     Caption = 'Activity Type List';
     PageType = List;
     SourceTable = "Activity Type";
-    UsageCategory = Lists;
+    UsageCategory = Lists;    
     layout
     {
         area(Content)
@@ -28,6 +28,14 @@ page 50202 "Activity Type List"
                 field("Default Next Step"; Rec."Default Next Step")
                 {
                     ToolTip = 'Specifies the value of the Default Next Step field.', Comment = '%';
+                }
+                field("Created from"; Rec."Created from")
+                {
+                    ToolTip = 'Specifies the value of the Created from field.', Comment = '%';
+                }
+                field("Related to"; Rec."Related to")
+                {
+                    ToolTip = 'Specifies the value of the Related to field.', Comment = '%';
                 }
             }
         }

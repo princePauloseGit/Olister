@@ -11,6 +11,9 @@ page 50200 "AANActivity List"
     CardPageId = 50201;
     ModifyAllowed = false;
     Editable = false;
+    InsertAllowed = false;
+    DeleteAllowed = false;
+    
     layout
     {
         area(Content)

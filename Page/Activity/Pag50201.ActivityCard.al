@@ -228,6 +228,10 @@ page 50201 "Activity Card"
                     Caption = 'Table Name';
                     Editable = false;
                 }
+                field("Related to"; Rec."Related to")
+                {
+                    ToolTip = 'Specifies the value of the Related to field.', Comment = '%';
+                }
             }
             group("Project Details")
             {
