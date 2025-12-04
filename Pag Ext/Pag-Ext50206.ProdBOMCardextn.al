@@ -3,7 +3,7 @@ namespace ChilternGlobalBC.ChilternGlobalBC;
 using Microsoft.Manufacturing.ProductionBOM;
 using Microsoft.Inventory.Item;
 using Microsoft.Inventory.Item.Picture;
-using TasksActivityModule.TasksActivityModule;
+using Microsoft.Projects.Project.Setup;
 using Microsoft.Projects.Project.Job;
 
 pageextension 50206 Prod_BOM_CardExtn extends "Production BOM"

@@ -31,9 +31,14 @@ pageextension 50202 "Project Card EXT" extends "Job Card"
 
 
         movebefore("No."; Description)
+        movebefore("Sell-to Customer No."; "Sell-to Customer Name")
         //add New Fields
         addafter("No.")
         {
+            field("Item Description"; Rec."Item Name")
+            {
+                ApplicationArea = all;
+            }
             field("Item No"; Rec."Item No")
             {
                 TableRelation = Item;
@@ -45,8 +50,18 @@ pageextension 50202 "Project Card EXT" extends "Job Card"
                     Cod.OpenItemRecord(Rec."Item No");
                 end;
             }
+            field("Item Variant"; Rec."Item Variant")
+            {
+                ApplicationArea = all;
+            }
+
             field(Quantity; Rec.Quantity)
             {
+                ApplicationArea = all;
+            }
+            field("Enquiry Name"; Rec."Enquiry Name")
+            {
+                Editable = false;
                 ApplicationArea = all;
             }
             field("Enquiry No."; Rec."Enquiry No")
@@ -61,18 +76,18 @@ pageextension 50202 "Project Card EXT" extends "Job Card"
                 end;
             }
 
-            field("Project Image"; Rec."Project Image")
-            {
-                ApplicationArea = all;
-                ToolTip = 'Specifies the image of the project.';
+            // field("Project Image"; Rec."Project Image")
+            // {
+            //     ApplicationArea = all;
+            //     ToolTip = 'Specifies the image of the project.';
 
-                trigger OnValidate()
-                var
-                    TempBlob: Codeunit "Temp Blob";
-                begin
-                    CurrPage.SaveRecord();
-                end;
-            }
+            //     trigger OnValidate()
+            //     var
+            //         TempBlob: Codeunit "Temp Blob";
+            //     begin
+            //         CurrPage.SaveRecord();
+            //     end;
+            // }
         }
         modify("Project Manager")
         {
@@ -135,11 +150,11 @@ pageextension 50202 "Project Card EXT" extends "Job Card"
 
         addfirst(factboxes)
         {
-            part(ItemPicture; "Item Picture")
+            part(ItemPicture; "Project Picture")
             {
                 ApplicationArea = all;
-                Caption = 'Item Picture';
-                SubPageLink = "No." = field("Item No");
+                Caption = 'Project Picture';
+                SubPageLink = "No." = field("No.");
             }
             part("Project Navigation Factbox"; "Project Navigation Factbox")
             {
@@ -251,6 +266,8 @@ pageextension 50202 "Project Card EXT" extends "Job Card"
             group(Activities_Promoted)
             {
                 Caption = 'Activity';
+                actionref(CreateActivity_Promoted; CreateActivity)
+                { }
                 actionref(OpenActivities_Promoted; OpenActivities)
                 { }
                 actionref(AllActivities_Promoted; AllActivities)
@@ -284,7 +301,7 @@ pageextension 50202 "Project Card EXT" extends "Job Card"
             {
                 Caption = 'Products';
                 Image = Item;
-                actionref(Products_Promoted; Products)
+                actionref(Products_Promoted; Product)
                 { }
                 actionref(ProjectProducts_Promoted; ProjectProducts)
                 { }
@@ -330,6 +347,7 @@ pageextension 50202 "Project Card EXT" extends "Job Card"
                 {
                     Caption = 'Create an Activity';
                     ApplicationArea = all;
+                    Image = Create;
                     trigger OnAction()
                     var
                         TasksController: Codeunit "Tasks & Activity Controller";
@@ -551,11 +569,11 @@ pageextension 50202 "Project Card EXT" extends "Job Card"
                 }
 
             }
-            group(ProductsGroup)
+            Group(Products)
             {
                 Caption = 'Products';
                 Image = Item;
-                action(Products)
+                action(Product)
                 {
                     Caption = 'All Products';
                     ApplicationArea = all;
@@ -564,7 +582,7 @@ pageextension 50202 "Project Card EXT" extends "Job Card"
                 }
                 action(ProjectProducts)
                 {
-                    Caption = 'Project Products';
+                    Caption = 'Project Product';
                     ApplicationArea = all;
                     Image = Item;
                     trigger OnAction()

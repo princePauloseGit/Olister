@@ -50,19 +50,8 @@ table 50200 AANActivity
         field(4; "Activity type"; Code[20])
         {
             DataClassification = CustomerContent;
-            TableRelation = "Activity Type" where("Created from" = field("Table Name"));
+            TableRelation = "Activity Type";
             Caption = 'Activity Type';
-
-            trigger OnValidate()
-            var
-                ActivityType: Record "Activity Type";
-            begin
-                if ActivityType.Get("Activity type") then begin
-                    "Related to" := ActivityType."Related to";
-                end else begin
-                    "Related to" := '';
-                end;
-            end;
         }
         field(5; "Description"; Text[250])
         {
@@ -267,12 +256,13 @@ table 50200 AANActivity
             DataClassification = CustomerContent;
         }
         field(37; "Project Planning Line No"; Integer)
-        { }
-        field(38; "Related to"; Text[30])
         {
-            Caption = 'Related to';
             DataClassification = CustomerContent;
-            Editable = false;
+        }
+        field(38; "Item Variant"; Code[10])
+        {
+            DataClassification = CustomerContent;
+            TableRelation = "Item Variant".Code where("Item No." = field("Item No."));
         }
     }
     keys

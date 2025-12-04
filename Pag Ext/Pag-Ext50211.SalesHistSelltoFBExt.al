@@ -1,6 +1,7 @@
 namespace ChilternGlobalBC.ChilternGlobalBC;
 
 using Microsoft.Sales.Document;
+using Microsoft.Sales.Customer;
 using TasksActivityModule.TasksActivityModule;
 using Microsoft.Projects.Project.Job;
 
@@ -8,6 +9,20 @@ pageextension 50211 "Sales Hist. Sell-to FB Ext" extends "Sales Hist. Sell-to Fa
 {
     layout
     {
+        addbefore("No.")
+        {
+            field(Name; Rec.Name)
+            {
+                ApplicationArea = all;
+                Caption = 'Customer Name';
+                trigger OnDrillDown()
+                var
+                    myInt: Integer;
+                begin
+                    PAGE.Run(PAGE::"Customer Card", Rec);
+                end;
+            }
+        }
         addfirst(Control2)
         {
             field("Live Activities"; Rec."No of Live Activities")
@@ -47,7 +62,7 @@ pageextension 50211 "Sales Hist. Sell-to FB Ext" extends "Sales Hist. Sell-to Fa
                 ApplicationArea = Basic, Suite;
                 Caption = 'Live Enquiries';
                 Editable = false;
-                DrillDownPageId = "Enquiry";
+                DrillDownPageId = Enquiries;
                 ToolTip = 'Specifies the number of Live Enquiries for the customer.';
             }
             field("All Enquiries"; Rec."All Enquiries")
@@ -55,7 +70,7 @@ pageextension 50211 "Sales Hist. Sell-to FB Ext" extends "Sales Hist. Sell-to Fa
                 ApplicationArea = Basic, Suite;
                 Caption = 'All Enquiries';
                 Editable = false;
-                DrillDownPageId = "Enquiry";
+                DrillDownPageId = Enquiries;
                 ToolTip = 'Specifies the number of All Enquiries for the customer.';
             }
             field("No of Live Projects"; Rec."No of Live Projects")

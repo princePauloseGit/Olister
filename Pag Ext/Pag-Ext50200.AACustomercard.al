@@ -11,7 +11,10 @@ pageextension 50200 "AACustomer card" extends "Customer Card"
     layout
     {
         movebefore("No."; Name)
+        movebefore("Phone No."; ContactDetails)
+        moveafter(Address; "Address 2", City, Control10, "Country/Region Code", "Post Code")
         addafter("Privacy Blocked")
+
         {
             field("Type"; Rec."Type")
             {

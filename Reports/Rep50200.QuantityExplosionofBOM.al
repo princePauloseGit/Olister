@@ -1,7 +1,7 @@
 report 50200 "QuantityExplosionofBOMReport"
 {
     DefaultLayout = RDLC;
-    RDLCLayout = './QuantityExplosionofBOM.rdl';
+    RDLCLayout = './Reports/QuantityExplosionofBOM.rdl';
     ApplicationArea = Manufacturing;
     Caption = 'Quantity Explosion of BOM Report';
     UsageCategory = ReportsAndAnalysis;

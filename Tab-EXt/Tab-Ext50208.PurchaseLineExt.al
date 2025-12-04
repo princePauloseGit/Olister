@@ -35,4 +35,21 @@ tableextension 50208 "Purchase Line Ext" extends "Purchase Line"
         }
 
     }
+
+
+    trigger OnAfterModify()
+    begin
+        ReasonCodeError();
+    end;
+
+    trigger OnBeforeInsert()
+    begin
+        ReasonCodeError();
+    end;
+
+    procedure ReasonCodeError()
+    begin
+        if Rejected and ("Reason Code" = '') then
+            Error('Reason Code must be filled in when line is rejected.');
+    end;
 }

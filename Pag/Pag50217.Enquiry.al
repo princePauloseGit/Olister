@@ -1,243 +1,198 @@
-namespace ChilternGlobalBC.ChilternGlobalBC;
-
-using Microsoft.Inventory.Item;
+namespace TasksActivityModule.TasksActivityModule;
 using Microsoft.Projects.Project.Job;
+using Microsoft.Foundation.Attachment;
+using System.Reflection;
+using System.Security.User;
+using Microsoft.Inventory.Item.Picture;
+using Microsoft.Purchases.Vendor;
+using Microsoft.Inventory.Item;
 using Microsoft.Sales.Customer;
-using System.Security.AccessControl;
-using Microsoft.Inventory.Item.Attribute;
-using Microsoft.Inventory.Setup;
-using Microsoft.Foundation.NoSeries;
-using TasksActivityModule.TasksActivityModule;
+using Microsoft.Sales.Document;
+using ChilternGlobalBC.ChilternGlobalBC;
 
-pageextension 50205 ItemCardExtn extends "Item Card"
+page 50217 Enquiry
 {
+    ApplicationArea = All;
+    Caption = 'Enquiry';
+    PageType = Card;
+    SourceTable = Enquiry;
+
     layout
     {
-        movebefore("No."; Description)
-        addafter("No.")
+        area(Content)
         {
-            field("Previous Version"; Rec."Previous Version")
+            group(General)
             {
-                ApplicationArea = All;
-                Editable = false;
-            }
-            field("Next Version"; Rec."Next Version")
-            {
-                ApplicationArea = All;
-                Editable = false;
-            }
-            field("Product Type Code"; Rec."Product Type Code")
-            {
-                ApplicationArea = All;
-            }
-            field("Product Category Code"; Rec."Product Category Code")
-            {
-                ApplicationArea = All;
-            }
-            field("Product Group Code"; Rec."Product Group Code")
-            {
-                ApplicationArea = All;
-            }
-        }
-        addafter(Item)
-        {
-            group("Product Details")
-            {
-                Caption = 'Product Details';
-                field("Core Product"; Rec."Core Product")
+                Caption = 'General';
+                field(Description; Rec.Description)
                 {
-                    ApplicationArea = All;
+                    ToolTip = 'Specifies the value of the Description field.', Comment = '%';
                 }
-                field(Brochure; Rec.Brochure)
+                field("Enquiry No."; Rec."Enquiry No.")
                 {
-                    ApplicationArea = All;
+                    ToolTip = 'Specifies the value of the Enquiry No. field.', Comment = '%';
+                    Editable = false;
                 }
-                field(Cost; Rec.Cost)
+                field("Start Date"; Rec."Start Date")
                 {
-                    ApplicationArea = All;
+                    ApplicationArea = all;
                 }
-                field(Trade; Rec.Trade)
-                {
-                    ApplicationArea = All;
-                }
-                field(MAP; Rec.MAP)
-                {
-                    ApplicationArea = All;
-                }
-                field(RRP; Rec.RRP)
-                {
-                    ApplicationArea = All;
-                }
-                field("Archive Products"; Rec."Archive Products")
-                {
-                    ApplicationArea = All;
-                }
-                field("CG Website"; Rec."CG Website")
-                {
-                    ApplicationArea = All;
-                }
-                field("Prokyt Website"; Rec."Prokyt Website")
-                {
-                    ApplicationArea = All;
-                }
-                field("Prokyt Cato"; Rec."Prokyt Cato")
-                {
-                    ApplicationArea = All;
-                }
-            }
-        }
-        addafter("Qty. on Sales Order")
-        {
-            field("Qty. on Purch. Quote"; Rec."Qty. on Purch. Quote")
-            {
-                ApplicationArea = All;
-            }
-            field("Qty. on Sales Quote"; Rec."Qty. on Sales Quote")
-            {
-                ApplicationArea = All;
-            }
-        }
-        modify("Attached Documents List")
-        {
-            Visible = false;
-        }
-        addafter(ItemPicture)
-        {
-            part(itemNavigation; "Item Navigation")
-            {
-                ApplicationArea = All;
-                Caption = 'Item Navigation';
-                SubPageLink = "No." = field("No.");
-            }
 
-            part(DocAttachmentFactbox; "Doc Attachment FactBox")
+                field("Customer Name"; Rec."Customer Name")
+                {
+                    ToolTip = 'Specifies the value of the Customer Name field.', Comment = '%';
+                    Editable = false;
+                }
+                field("Customer No."; Rec."Customer No.")
+                {
+                    ToolTip = 'Specifies the value of the Customer No. field.', Comment = '%';
+                    trigger OnValidate()
+                    var
+                        EnquiryProjects: Record Job;
+                    begin
+                        if Rec."Customer No." <> xRec."Customer No." then begin
+                            EnquiryProjects.SetFilter("Enquiry No", Rec."Enquiry No.");
+                            if enquiryProjects.FindSet() then
+                                Error('Cannot change Customer No. as there are linked Projects to this Enquiry. Please remove linked Projects before changing the Customer.');
+                        end;
+                    end;
+                }
+
+                field("Review Date"; Rec."Review Date")
+                {
+
+                }
+                field(Status; Rec.Status)
+                {
+                    ToolTip = 'Specifies the value of the status field.', Comment = '%';
+                }
+                field(Owner; Rec.Owner)
+                {
+                    ToolTip = 'Specifies the value of the Owner field.', Comment = '%';
+                }
+                field(Originator; Rec.Originator)
+                {
+                    ToolTip = 'Specifies the value of the Originator field.', Comment = '%';
+                    TableRelation = "User Setup";
+                }
+
+
+
+
+            }
+            group("Customer Details")
             {
-                UpdatePropagation = Both;
-                Caption = 'Attachment Upload';
-                ApplicationArea = All;
-                SubPageLink = "Table ID" = const(Database::Item), "Document No." = field("No.");
-                //Attachments Through Activity Only
-                Visible = false;
+                ShowCaption = false;
+                field("Customer Address"; Rec."Customer Address")
+                {
+                    ToolTip = 'Specifies the value of the Customer Address field.', Comment = '%';
+                }
+                field("Customer Email"; Rec."Customer Email")
+                {
+                    ToolTip = 'Specifies the value of the Customer Email field.', Comment = '%';
+                }
+                field("Customer Phone Number"; Rec."Customer Phone Number")
+                {
+                    ToolTip = 'Specifies the value of the Tel field.', Comment = '%';
+                }
+            }
+            group(LinkedProjects)
+            {
+                Caption = 'Projects';
+                part("Project List"; "Projects ListPart factbox")
+                {
+                    ApplicationArea = Basic, Suite;
+
+                    SubPageLink = "Enquiry No" = field("Enquiry No.");
+
+                }
             }
 
 
-            part(Activities; "Activity List Part FactBox")
+        }
+        area(FactBoxes)
+        {
+
+            part(Activity1; "Activity List Part FactBox")
             {
                 UpdatePropagation = Both;
                 Caption = 'Related Activity';
                 ApplicationArea = All;
-                SubPageLink = "Record No." = field("No."), "Table Name" = const('Item');
+                SubPageLink = "Record No." = field("Enquiry No."), "Table Name" = const('Enquiry');
+
+            }
+            Part(EnquiryNavFactbox; "Enquiry Navigation Factbox")
+            {
+                Caption = 'Enquiry Navigation';
+                ApplicationArea = All;
+                SubPageLink = "Enquiry No." = field("Enquiry No.");
+            }
+
+            // part(attach; "Doc Attachment FactBox")
+            // {
+            //     Caption = 'Enquiry Attachments';
+            //     SubPageLink = "Table ID" = const(Database::Enquiry),
+            //          "Document No." = field("Enquiry No.");
+            // }
+            part("Customer Activity"; "Activity List Part FactBox")
+            {
+                Caption = 'Customer Activity';
+                ApplicationArea = all;
+                SubPageLink = "Record No." = field("Customer No."), "Table Name" = const('Customer');
+            }
+            part(ALLDocAttachmentFactbox; "All Attachments Factbox")
+            {
+                UpdatePropagation = Both;
+                Caption = 'Full Attachment List';
+                ApplicationArea = All;
+            }
+
+            systempart(Links; Links)
+            {
+                ApplicationArea = all;
+                Visible = true;
+            }
+            systempart(Notes; Notes)
+            {
+                ApplicationArea = all;
+                Visible = true;
             }
         }
+
     }
     actions
     {
-        addafter(PricesandDiscounts)
+        area(Creation)
         {
-            group(Version)
+
+            action(CreateActivity)
             {
-                Caption = 'Version';
-                action(CreateNewVersion)
+                Caption = 'Create an Activity';
+                ApplicationArea = all;
+                trigger OnAction()
+                begin
+                    TasksController.CreateActivity(Rec."Enquiry No.", Rec.TableName);
+                end;
+            }
+            group(Companies)
+            {
+                action(Customers)
                 {
-                    Caption = 'Create New Version';
-                    ApplicationArea = All;
-                    trigger OnAction()
-                    var
-                        NewItem: Record Item;
-                        ItemNoSeriesMgt: Codeunit "No. Series";
-                        InvSetup: Record "Inventory Setup";
-                    begin
-                        InvSetup.Get();
-                        NewItem.Init();
-                        NewItem := Rec;
-                        NewItem."Previous Version" := Rec."No.";
-                        NewItem."No." := ItemNoSeriesMgt.GetNextNo(InvSetup."Item Nos.");
-                        NewItem.Insert();
-                        Rec."Next Version" := NewItem."No.";
-                        CopyAttributesToNextVersion(NewItem);
-                        CopyItemVariants(Rec."No.", NewItem."No.", NewItem.SystemId);
-                        CurrPage.Update();
-                        Run(Page::"Item Card", NewItem);
-                    end;
+                    Caption = 'Customers';
+                    ApplicationArea = all;
+                    Image = Customer;
+                    RunObject = page "Customer List";
+                    //  RunPageLink= 
                 }
-                action(ViewVersionHistory)
+                action(Vendors)
                 {
-                    Caption = 'View Version History';
-                    ApplicationArea = All;
-                    trigger OnAction()
-                    var
-                        ItemVersionHistory: Page "Item Version List";
-                        Item: Record Item;
-                        ItemNo: Code[20];
-                        ItemversionTracker: Record "Item Version Tracker" temporary;
-                        user: Record User;
-                        SrNo: Integer;
-                    begin
-                        ItemNo := Rec."No.";
-                        Item.Get(Rec."No.");
-                        SrNo := 1;
-                        while Item."Previous Version" <> '' do
-                            Item.Get(Item."Previous Version");
-
-
-                        while Item."Next Version" <> '' do begin
-                            Item.Get(Item."Next Version");
-                            ItemversionTracker.Init();
-                            ItemversionTracker."Item No" := Item."Previous Version";
-                            ItemversionTracker."Next Version" := Item."No.";
-                            ItemversionTracker."Created date" := Item.SystemCreatedAt;
-                            ItemversionTracker."Serial No." := SrNo;
-                            if user.Get(Item.SystemCreatedBy) then
-                                ItemversionTracker."Created By" := user."Full Name";
-                            ItemversionTracker.Insert();
-
-                            SrNo += 1;
-                        end;
-
-                        ItemversionTracker.SetCurrentKey("Serial No.");
-                        ItemversionTracker.Ascending(true);
-                        RunModal(Page::"Item Version Tracker", ItemversionTracker);
-                    end;
-                }
-                action(PreviousVersion)
-                {
-                    Caption = 'Previous Version';
-                    ApplicationArea = All;
-                    trigger OnAction()
-                    var
-                        Item: Record Item;
-                    begin
-                        if Rec."Previous Version" <> '' then begin
-                            if Item.Get(Rec."Previous Version") then
-                                Run(Page::"Item Card", Item)
-                            else
-                                Error('No Previous Version found');
-                        end
-                        else
-                            Error('No Previous Version found');
-                    end;
-                }
-                action(NextVersion)
-                {
-                    Caption = 'Next Version';
-                    ApplicationArea = All;
-                    trigger OnAction()
-                    var
-                        Item: Record Item;
-                    begin
-                        if Rec."Next Version" <> '' then begin
-                            if Item.Get(Rec."Next Version") then
-                                Run(Page::"Item Card", Item)
-                            else
-                                Error('No Next Version found');
-                        end
-                        else
-                            Error('No Next Version found');
-                    end;
+                    Caption = 'Vendors';
+                    ApplicationArea = all;
+                    Image = Vendor;
+                    RunObject = page "Vendor List";
                 }
 
             }
-
             group(Projects)
             {
                 Caption = 'Projects';
@@ -312,7 +267,7 @@ pageextension 50205 ItemCardExtn extends "Item Card"
                     RunObject = page "Job List";
                 }
             }
-            group(Activity)
+            group(Activities)
             {
                 action(OpenActivities)
                 {
@@ -414,10 +369,28 @@ pageextension 50205 ItemCardExtn extends "Item Card"
                 }
 
             }
+            action(Products)
+            {
+                Caption = 'Products';
+                ApplicationArea = all;
+                Image = Item;
+                RunObject = page "Item List";
+            }
         }
-
-        addfirst(Promoted)
+        area(Promoted)
         {
+            actionref(CreateActivity_Promoted; CreateActivity)
+            { }
+            group(Companies_Promoted)
+
+            {
+                Image = Company;
+                Caption = 'Companies';
+                actionref(Customer_Promoted; Customers)
+                { }
+                actionref(Vendor_Promoted; Vendors)
+                { }
+            }
             group(Projects_Promoted)
             {
                 Caption = 'Projects';
@@ -464,9 +437,7 @@ pageextension 50205 ItemCardExtn extends "Item Card"
                 actionref(Enquiry_Research_Promoted; "Enquiry_Research")
                 { }
                 actionref(Enquiry_ShippingAndDelivery_Promoted; "Enquiry_ShippingAndDelivery")
-                {
-
-                }
+                { }
                 actionref(Enquiry_MaterialsAndParts_Promoted; "Enquiry_MaterialsAndParts")
                 { }
                 actionref(Enquiry_Terminology_Promoted; "Enquiry_Terminology")
@@ -478,56 +449,112 @@ pageextension 50205 ItemCardExtn extends "Item Card"
 
 
             }
-            group(Version_Promoted)
-            {
-                Caption = 'Version';
-                actionref(CreateNewVersion_Promoted; CreateNewVersion)
-                { }
-                actionref(ViewVersionHistory_Promoted; ViewVersionHistory)
-                { }
-                actionref(PreviousVersion_Promoted; PreviousVersion)
-                { }
-                actionref(NextVersion_Promoted; NextVersion)
-                { }
-            }
+            actionref(Products_Promoted; Products)
+            { }
         }
+
+
     }
-    procedure CopyAttributesToNextVersion(NextItem: Record Item)
+    trigger OnAfterGetCurrRecord()
     var
-        ItemAttributeValMapping: Record "Item Attribute Value Mapping";
-        ItemAttributeValMapping2: Record "Item Attribute Value Mapping";
+        "Document No.": Text;
+        Project: Record Job;
+        Activity: Record AANActivity;
+    begin
+        CurrPage.ALLDocAttachmentFactbox.Page.LoadFromBlob(Rec."Enquiry No.", Database::Enquiry);
+    end;
+
+    procedure UpdateAttachmentMetadataEnquiry(EnquiryNo: Code[20]; DocTypeText: Text; DocNo: Code[20]; FileName: Text; ID: Integer)
+    var
+        AttachmentList: List of [Text];
+        BufferRec: Record "All Doc Info Buffer";
+        Enquiry: Record Enquiry;
+        InStream: InStream;
+        OutStream: OutStream;
+        SerializedText: Text;
+        Line: Text;
+        LineText: Text;
 
     begin
-        ItemAttributeValMapping.SetRange("Table ID", Database::Item);
-        ItemAttributeValMapping.SetFilter("No.", Rec."No.");
-        if ItemAttributeValMapping.FindSet() then
-            repeat
-                if ItemAttributeValMapping2.Get(Database::Item, NextItem."No.", ItemAttributeValMapping."Item Attribute ID") then begin
-                    ItemAttributeValMapping2."Item Attribute Value ID" := ItemAttributeValMapping."Item Attribute Value ID";
-                    ItemAttributeValMapping2.Modify();
-                end
-                else begin
-                    Clear(ItemAttributeValMapping2);
-                    ItemAttributeValMapping2.Init();
-                    ItemAttributeValMapping2."Table ID" := Database::Item;
-                    ItemAttributeValMapping2."No." := NextItem."No.";
-                    ItemAttributeValMapping2."Item Attribute ID" := ItemAttributeValMapping."Item Attribute ID";
-                    ItemAttributeValMapping2."Item Attribute Value ID" := ItemAttributeValMapping."Item Attribute Value ID";
-                    ItemAttributeValMapping2.Insert();
+        if not Enquiry.Get(EnquiryNo) then
+            exit;
+
+        Enquiry.CalcFields("Doc Attachment List");
+        if Enquiry."Doc Attachment List".HasValue then begin
+            Enquiry."Doc Attachment List".CreateInStream(InStream);
+            InStream.ReadText(SerializedText);
+            AttachmentList := SerializedText.Split('¶');
+        end;
+
+        LineText := StrSubstNo('%1|%2|%3|%4', DocTypeText, DocNo, FileName, ID);
+        AttachmentList.Add(LineText);
+
+        SerializedText := '';
+        foreach Line in AttachmentList do
+            SerializedText += Line + '¶';
+
+        Enquiry."Doc Attachment List".CreateOutStream(OutStream);
+        OutStream.Write(SerializedText);
+
+        Enquiry.Modify();
+    end;
+
+    procedure DeleteAttachmentMetadataEnquiry(EnquiryNo: Code[20]; ID: Integer)
+    var
+        Enquiry: Record Enquiry;
+        InStream: InStream;
+        OutStream: OutStream;
+        SerializedText: Text;
+        AttachmentList: List of [Text];
+        Line: Text;
+        Parts: List of [Text];
+        CleanedText: Text;
+        i: Integer;
+    begin
+        if not Enquiry.Get(EnquiryNo) then
+            exit;
+
+        Enquiry.CalcFields("Doc Attachment List");
+        if not Enquiry."Doc Attachment List".HasValue then
+            exit;
+
+        // Read blob into text
+        Enquiry."Doc Attachment List".CreateInStream(InStream);
+        InStream.ReadText(SerializedText);
+
+        AttachmentList := SerializedText.Split('¶');
+
+        // Loop and find the matching line by ID
+        for i := 1 to AttachmentList.Count do begin
+            Line := AttachmentList.Get(i);
+            if Line <> '' then begin
+                Parts := Line.Split('|');
+                if Parts.Count >= 4 then begin
+                    if Parts.Get(4) = Format(ID) then begin
+                        AttachmentList.RemoveAt(i);
+                        break;
+                    end;
                 end;
-            until ItemAttributeValMapping.Next() = 0;
+            end;
+        end;
 
+        // Rebuild text without the deleted line
+        CleanedText := '';
+        foreach Line in AttachmentList do
+            if Line <> '' then
+                CleanedText += Line + '¶';
+
+        // Update blob
+        Clear(Enquiry."Doc Attachment List");
+        Enquiry."Doc Attachment List".CreateOutStream(OutStream);
+        OutStream.Write(CleanedText);
+
+        Enquiry.Modify();
     end;
 
-    local procedure CopyItemVariants(FromItemNo: Code[20]; ToItemNo: Code[20]; ToItemId: Guid)
     var
-        ItemVariant: Record "Item Variant";
-        CopyItem: Codeunit "Copy Item";
-    begin
-        CopyItem.CopyItemRelatedTable(Database::"Item Variant", ItemVariant.FieldNo("Item No."), FromItemNo, ToItemNo);
-        ItemVariant.SetRange("Item No.", ToItemNo);
-        if not ItemVariant.IsEmpty() then
-            ItemVariant.ModifyAll("Item Id", ToItemId);
-    end;
+        TasksController: Codeunit "Tasks & Activity Controller";
 
 }
+
+

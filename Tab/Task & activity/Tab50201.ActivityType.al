@@ -26,20 +26,6 @@ table 50201 "Activity Type"
             Caption = 'Default Next Step';
             DataClassification = CustomerContent;
         }
-        field(5; "Created from"; Text[30])
-        {
-            Caption = 'Created from';
-            DataClassification = CustomerContent;
-            TableRelation = AllObjWithCaption."Object Name" where("Object Type" = const(Table));
-            ValidateTableRelation = false;
-        }
-        field(6; "Related to"; Text[30])
-        {
-            Caption = 'Related to';
-            DataClassification = CustomerContent;
-            TableRelation = AllObjWithCaption."Object Name" where("Object Type" = const(Table));
-            ValidateTableRelation = false;
-        }
     }
 
     keys

@@ -1,6 +1,9 @@
 namespace TasksActivityModule.TasksActivityModule;
 using Microsoft.Sales.Customer;
 using Microsoft.Projects.Project.Job;
+using ChilternGlobalBC.ChilternGlobalBC;
+using System.Utilities;
+using Microsoft.Foundation.Reporting;
 using Microsoft.Inventory.Item;
 using Microsoft.Projects.Project.Planning;
 using Microsoft.Purchases.Vendor;
@@ -22,6 +25,7 @@ codeunit 50200 "Tasks & Activity Controller"
         Activity.Validate("Enquiry No.", AAEnquiryNo);
         Activity.Validate("Customer No.", Job."Sell-to Customer No.");
         Activity.Validate("Item No.", Job."Item No");
+        Activity.Validate("Item Variant", Job."Item Variant");
         Activity.Insert(true);
         Page.Run(50201, Activity);
     end;
@@ -247,18 +251,74 @@ codeunit 50200 "Tasks & Activity Controller"
         exit(Project."No.");
     end;
 
-    Procedure SendEmail(Var Activity: Record AANActivity; Receipents: Text[80]): Text
+    Procedure SendEmail(Var Activity: Record AANActivity): Text
     var
         Email: Codeunit Email;
         EmailMessage: Codeunit "Email Message";
         EmailScenario: Enum "Email Scenario";
         Body: Text;
+        EmailOutbox: Record "Email Outbox";
+        ActURL: Text;
     begin
-        Body := StrSubstNo('<p>Hello,</p><p>Activity No:%1</p><p>Title:%2</p><p>Assigned To:%3</p><p>Activity Status:%4</p><P> Thanks and have a great day!</p>', Activity."Activity No", Activity."Activity Title", Activity."Assigned To", Activity.Status);
-        EmailMessage.Create(Receipents, 'Email Confirmation ' + Activity."Activity No", Body, true);
-        if Email.Send(EmailMessage, EmailScenario::"Purchase Order") then
-            Message('Email sent successfully')
-        else
-            Error('Could not send email. Please check your email configuration.');
+        ActURL := GetUrl(ClientType::Web, CompanyName, ObjectType::Page, Page::"Activity Card", Activity, false);
+        Body := StrSubstNo('<p>Hello,</p><p>Activity No: %1</p><p><a href="' + ActURL + '" target="_blank">Open Activity</a></p><p>Thanks and have a great day!</p>', Activity."Activity No");
+        EmailMessage.Create('', 'Email Confirmation ' + Activity."Activity No", Body, true);
+        AddAttachmentToActivityEmail(EmailMessage, Activity);
+        Email.OpenInEditor(EmailMessage);
+
+
+        // if Email.Send(EmailMessage, EmailScenario::Default) then
+        //     Message('Email sent successfully')
+        // else
+        //     Error('Could not send email. Please check your email configuration.');
     end;
+
+
+
+    local procedure AddAttachmentToActivityEmail(var EmailMessage: Codeunit "Email Message"; Activity: Record AANActivity)
+    var
+        //ReportLayoutSelection: Record "Report Layout Selection";
+        TempBlob: Codeunit "Temp Blob";
+        ActivityRecordRef: RecordRef;
+        ReportInStream: InStream;
+        ReportOutStream: OutStream;
+        LayoutCode: Code[20];
+        ReportId: Integer;
+        AttachmentFileNameLbl: Label 'Activity %1.pdf', Comment = '%1 Activity No.';
+    begin
+        TempBlob.CreateOutStream(ReportOutStream);
+        ActivityRecordRef := SetActivityRecordRef(Activity);
+        //    ReportLayoutSelection := GetPurchInvoiceReportandLayoutCode(ReportId, LayoutCode);
+
+        Report.SaveAs(Report::"Activity Details", '', ReportFormat::Pdf, ReportOutStream, ActivityRecordRef);
+
+        TempBlob.CreateInStream(ReportInStream);
+        EmailMessage.AddAttachment(StrSubstNo(AttachmentFileNameLbl, Activity."Activity No"), '', ReportInStream);
+    end;
+
+    procedure SetActivityRecordRef(Activity: Record AANActivity) ReturnRecordRef: RecordRef
+    var
+
+        ActivityRecord: Record AANActivity;
+    begin
+        ActivityRecord.SetRange("Activity No", Activity."Activity No");
+        ActivityRecord.Findfirst();
+        ReturnRecordRef.GetTable(ActivityRecord);
+    end;
+
+    // procedure GetPurchInvoiceReportandLayoutCode(var ReportId: Integer; var LayoutCode: Code[20]) ReportLayoutSelection: Record "Report Layout Selection"
+    // var
+    //     Reportselections: Record "Report Selections";
+    // begin
+    //     Reportselections.Reset();
+    //     Reportselections.SetRange(Usage, Reportselections.Usage::"P.Invoice");
+    //     Reportselections.SetRange("Use for Email Attachment", true);
+    //     if Reportselections.Findfirst() then begin
+    //         LayoutCode := Reportselections."Email Body Layout Code";
+    //         ReportId := Reportselections."Report ID";
+    //         if ReportLayoutSelection.Get(ReportId, CompanyName) then;
+    //     end;
+    // end;
+
+
 }

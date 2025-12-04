@@ -174,15 +174,20 @@ tableextension 50200 "Project EXT" extends Job
                 end;
             end;
         }
-    }
 
-    trigger OnInsert()
-    var
-        ProjectDimensionMgt: Codeunit "Project Dimension Management";
-    begin
-        if "No." <> '' then
-            ProjectDimensionMgt.CreateProjectDimensions("No.");
-    end;
+        field(50220; "Enquiry Name"; Text[100])
+        {
+            Caption = 'Enquiry Name';
+            FieldClass = FlowField;
+            CalcFormula = lookup(Enquiry.Description where("Enquiry No." = field("Enquiry No")));
+        }
+        field(50221; "Item Variant"; Code[20])
+        {
+            Caption = 'Item Variant';
+            DataClassification = CustomerContent;
+            TableRelation = "Item Variant".Code where("Item No." = field("Item No"));
+        }
+    }
 
     Procedure CheckOpenActivities()
     var
