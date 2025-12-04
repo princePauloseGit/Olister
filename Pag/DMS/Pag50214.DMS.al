@@ -11,44 +11,60 @@ page 50214 "Doc Attachment History List"
     {
         area(Content)
         {
-            // group(SearchGroup)
-            // {
-            //     Caption = 'Search';
+            group(SearchGroup)
+            {
+                Caption = 'Search & Filter';
 
-            //     field(Search; DisplaySearchString)
-            //     {
-            //         ApplicationArea = All;
-            //         Caption = 'Search';
-            //         ToolTip = 'Type at least 2 characters and press Enter to search. Clear to reset.';
+                field(SearchText; SearchString)
+                {
+                    ApplicationArea = All;
+                    Caption = 'Search Text';
+                    ToolTip = 'Enter text to search in activity titles, file names, document purposes, and tags. Press Enter to search.';
 
-            //         trigger OnValidate()
-            //         var
-            //             Normalized: Text;
-            //             Codeu: Codeunit "Data Search in Table";
-            //         begin
-            //             Codeu.FindInTable(Database::"Doc Attachment History",
-            //             TableType,
-            //             DisplaySearchString,
-            //             Results);
-            //             CurrPage.LinesPart.Page.
-            //             // Normalized := DelChr(DisplaySearchString, '<>', ' ');
-            //             // Normalized := DelChr(Normalized, '<>', ' ');
-            //             // DisplaySearchString := Normalized;
+                    trigger OnValidate()
+                    begin
+                        ApplySearch();
+                    end;
+                }
 
-            //             // if StrLen(Normalized) < 2 then begin
-            //             //     ClearSearch();
-            //             //     exit;
-            //             // end;
+                field(FileNameFilter; FileNameFilterText)
+                {
+                    ApplicationArea = All;
+                    Caption = 'File Name Filter';
+                    ToolTip = 'Filter by file name';
 
-            //             // ApplySearch(Normalized);
-            //         end;
-            //     }
-            //     part(LinesPart; "Data Search lines")
-            //     {
-            //         ApplicationArea = All;
-            //         UpdatePropagation = Both;
-            //     }
-            // }
+                    trigger OnValidate()
+                    begin
+                        ApplyFilters();
+                    end;
+                }
+
+                field(DocumentPurposeFilter; DocumentPurposeFilterText)
+                {
+                    ApplicationArea = All;
+                    Caption = 'Document Purpose Filter';
+                    ToolTip = 'Filter by document purpose';
+                    TableRelation = "Document Purpose";
+
+                    trigger OnValidate()
+                    begin
+                        ApplyFilters();
+                    end;
+                }
+
+                field(ActivityTypeFilter; ActivityTypeFilterText)
+                {
+                    ApplicationArea = All;
+                    Caption = 'Activity Type Filter';
+                    ToolTip = 'Filter by activity type';
+                    TableRelation = "Activity Type";
+
+                    trigger OnValidate()
+                    begin
+                        ApplyFilters();
+                    end;
+                }
+            }
 
             repeater(Group)
             {
@@ -72,37 +88,63 @@ page 50214 "Doc Attachment History List"
                 field("Source File"; tableName) { ApplicationArea = All; }
                 field("Related No."; Rec."Document No.") { ApplicationArea = All; }
                 field("Document Purpose"; Rec."Document Purpose") { ApplicationArea = All; }
+                field("Document Purpose Description"; Rec."Document Purpose Description")
+                {
+                    ApplicationArea = All;
+                    Caption = 'Purpose Description';
+                }
                 field("Document Tag"; Rec."Document Tag") { ApplicationArea = All; }
+                field("Activity Title"; Rec."Activity Title") { ApplicationArea = All; }
+                field("Activity Type"; Rec."Activity Type") { ApplicationArea = All; }
+                field("Activity Project No."; Rec."Activity Project No.") { ApplicationArea = All; }
+                field("Activity Enquiry No."; Rec."Activity Enquiry No.") { ApplicationArea = All; }
                 field("User ID"; Rec."User ID") { ApplicationArea = All; }
                 field("Date and Time"; Rec."Date and Time") { ApplicationArea = All; }
             }
         }
     }
 
-    // actions
-    // {
-    //     area(Processing)
-    //     {
-    //         action(ClearSearchAction)
-    //         {
-    //             ApplicationArea = All;
-    //             Caption = 'Clear Search';
-    //             Image = ClearFilter;
-    //             ToolTip = 'Clear the search and restore all records.';
-    //             trigger OnAction()
-    //             begin
-    //                 DisplaySearchString := '';
-    //                 ClearSearch();
-    //             end;
-    //         }
-    //     }
-    // }
+    actions
+    {
+        area(Processing)
+        {
+            action(ClearFilters)
+            {
+                ApplicationArea = All;
+                Caption = 'Clear All Filters';
+                Image = ClearFilter;
+                ToolTip = 'Clear all search and filter criteria.';
 
-    // trigger OnOpenPage()
-    // begin
-    //     PreSearchView := Rec.GetView();
-    //     IsSearching := false;
-    // end;
+                trigger OnAction()
+                begin
+                    ClearAllSearchFilters();
+                end;
+            }
+
+            action(AdvancedSearch)
+            {
+                ApplicationArea = All;
+                Caption = 'Advanced Search';
+                Image = Find;
+                ToolTip = 'Open advanced search dialog.';
+
+                trigger OnAction()
+                begin
+                    RunAdvancedSearch();
+                end;
+            }
+        }
+    }
+
+    trigger OnOpenPage()
+    begin
+        // Only initialize on first load, not on every page refresh
+        if not PageInitialized then begin
+            OriginalView := Rec.GetView();
+            IsSearchActive := false;
+            PageInitialized := true;
+        end;
+    end;
 
     trigger OnAfterGetRecord()
     var
@@ -112,96 +154,115 @@ page 50214 "Doc Attachment History List"
             tableName := O."Object Caption";
     end;
 
-    // local procedure ApplySearch(SearchText: Text)
-    // var
-    //     R: Record "Doc Attachment History";
-    //     Pattern: Text;
-    // begin
-    //     if not IsSearching then
-    //         PreSearchView := Rec.GetView();
+    local procedure ApplySearch()
+    begin
+        if SearchString = '' then begin
+            ClearSearch();
+            exit;
+        end;
 
-    //     Pattern := '@*' + SearchText + '*';
+        Rec.Reset();
+        Rec.MarkedOnly(false);
+        Rec.ClearMarks();
 
+        if Rec.FindSet() then begin
+            repeat
+                if (StrPos(UpperCase(Rec."Activity Title"), UpperCase(SearchString)) > 0) or
+                   (StrPos(UpperCase(Rec."Document Purpose"), UpperCase(SearchString)) > 0) or
+                   (StrPos(UpperCase(Rec."Document Purpose Description"), UpperCase(SearchString)) > 0) or
+                   (StrPos(UpperCase(Rec."Document Tag"), UpperCase(SearchString)) > 0) or
+                   (StrPos(UpperCase(Rec."Activity Tags"), UpperCase(SearchString)) > 0) or
+                   (StrPos(UpperCase(Rec."Activity Type"), UpperCase(SearchString)) > 0) or
+                   (StrPos(UpperCase(Rec."Activity Project No."), UpperCase(SearchString)) > 0) or
+                   (StrPos(UpperCase(Rec."Activity Enquiry No."), UpperCase(SearchString)) > 0) then begin
 
-    //     Rec.MarkedOnly(false);
-    //     Rec.ClearMarks();
+                    Rec.Mark(true);
+                end;
+            until Rec.Next() = 0;
+        end;
 
+        Rec.MarkedOnly(true);
+        IsSearchActive := true;
 
-    //     R.SetView(PreSearchView);
-    //     R.SetLoadFields("File Name");
-    //     R.SetFilter("File Name", Pattern);
-    //     if R.FindSet() then
-    //         repeat
-    //             R.Mark(true);
-    //         until R.Next() = 0;
+        if Rec.FindFirst() then;
 
-    //     R.SetView(PreSearchView);
-    //     R.SetLoadFields("Document No.");
-    //     R.SetFilter("Document No.", Pattern);
-    //     if R.FindSet() then
-    //         repeat
-    //             R.Mark(true);
-    //         until R.Next() = 0;
+        CurrPage.Update(false);
+    end;
 
-    //     R.SetView(PreSearchView);
-    //     R.SetLoadFields("Document Purpose");
-    //     R.SetFilter("Document Purpose", Pattern);
-    //     if R.FindSet() then
-    //         repeat
-    //             R.Mark(true);
-    //         until R.Next() = 0;
+    local procedure ApplyFilters()
+    begin
+        if (FileNameFilterText = '') and (DocumentPurposeFilterText = '') and (ActivityTypeFilterText = '') then begin
+            Rec.Reset();
+            Rec.MarkedOnly(false);
+            Rec.ClearMarks();
+            IsSearchActive := false;
 
-    //     R.SetView(PreSearchView);
-    //     R.SetLoadFields("Document Tag");
-    //     R.SetFilter("Document Tag", Pattern);
-    //     if R.FindSet() then
-    //         repeat
-    //             R.Mark(true);
-    //         until R.Next() = 0;
+            if Rec.FindFirst() then;
 
+            CurrPage.Update(false);
+            exit;
+        end;
 
-    //     Rec.SetView(PreSearchView);
-    //     Rec.MarkedOnly(true);
-    //     IsSearching := true;
+        Rec.Reset();
+        Rec.MarkedOnly(false);
+        Rec.ClearMarks();
 
-    //     CurrPage.Update(false);
-    // end;
+        if FileNameFilterText <> '' then begin
+            Rec.CalcFields("File Name");
+            Rec.SetFilter("File Name", '*' + FileNameFilterText + '*');
+        end;
 
-    // local procedure ClearSearch()
-    // begin
+        if DocumentPurposeFilterText <> '' then
+            Rec.SetFilter("Document Purpose", DocumentPurposeFilterText);
 
-    //     Rec.MarkedOnly(false);
-    //     Rec.ClearMarks();
+        if ActivityTypeFilterText <> '' then
+            Rec.SetFilter("Activity Type", ActivityTypeFilterText);
 
-    //     Rec.SetView(PreSearchView);
-    //     IsSearching := false;
+        if Rec.FindFirst() then;
 
-    //     CurrPage.Update(false);
-    // end;
+        CurrPage.Update(false);
+    end;
 
-    // local procedure ClearAllFilters()
-    // begin
-    //     Rec.SetRange("File Name");
-    //     Rec.SetRange("Document No.");
-    //     Rec.SetRange("Document Purpose");
-    //     Rec.SetRange("Document Tag");
-    //     Rec.SetRange("User ID");
-    // end;
+    local procedure ClearSearch()
+    begin
+        Rec.MarkedOnly(false);
+        Rec.ClearMarks();
+        Rec.Reset();
+        IsSearchActive := false;
+
+        if Rec.FindFirst() then;
+
+        CurrPage.Update(false);
+    end;
+
+    local procedure ClearAllSearchFilters()
+    begin
+        SearchString := '';
+        FileNameFilterText := '';
+        DocumentPurposeFilterText := '';
+        ActivityTypeFilterText := '';
+
+        ClearSearch();
+        Rec.Reset();
+    end;
+
+    local procedure RunAdvancedSearch()
+    var
+        AdvancedSearchPage: Page "Doc Attachment Advanced Search";
+    begin
+        if AdvancedSearchPage.RunModal() = Action::OK then begin
+            AdvancedSearchPage.ApplyFiltersToRecord(Rec);
+        end;
+    end;
 
     var
         DMSCodeunit: Codeunit "DocAttach Ask Metadata";
         tableName: Text;
-
-        DisplaySearchString: Text;
-        PreSearchView: Text;
-        IsSearching: Boolean;
-        TableNo: Integer;
-        TableType: Integer;
         SearchString: Text;
-        Results: Dictionary of [Text, Text];
-
-    // protected procedure AddResults(TableTypeId: Integer; var Results: Dictionary of [Text, Text])
-    // begin
-    //     CurrPage.LinesPart.Page.AddResults(TableTypeID, Results);
-    // end;
+        FileNameFilterText: Text;
+        DocumentPurposeFilterText: Code[20];
+        ActivityTypeFilterText: Code[20];
+        OriginalView: Text;
+        IsSearchActive: Boolean;
+        PageInitialized: Boolean;
 }

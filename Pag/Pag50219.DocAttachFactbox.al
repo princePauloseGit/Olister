@@ -54,16 +54,14 @@ page 50219 "Doc Attachment FactBox"
                 AllowMultipleFiles = true;
                 trigger OnAction(Files: List of [FileUpload])
                 var
-                    // DocHistory: Record "Doc Attachment History";
-                    pagefgfgh: Page "Doc Attachment Card";
+                    documentAttachmentPage: Page "Doc Attachment Card";
                 begin
                     UploadFile(Files);
                     GDocuHistory.SetRange("Entry No.", Int1, Int2);
                     if GDocuHistory.FindSet() then begin
-                        pagefgfgh.getdata(GDocuHistory);
-                        pagefgfgh.RunModal()
-                        // if PAGE.RunModal(PAGE::"Doc Attachment Card", GDocuHistory) = Action::LookupOK then begin
-                        // end;
+                        documentAttachmentPage.SetTableView(GDocuHistory);
+                        documentAttachmentPage.SetRecord(GDocuHistory);
+                        documentAttachmentPage.RunModal();
                     end;
                 end;
             }
@@ -112,7 +110,6 @@ page 50219 "Doc Attachment FactBox"
                 DocumentAttachment.ImportFromStream(UploadStream, FileUpload.FileName);
                 DocumentAttachment.Insert(true);
 
-
                 History.Init();
                 History.ID := DocumentAttachment.ID;
                 History."Table ID" := DocumentAttachment."Table ID";
@@ -121,17 +118,21 @@ page 50219 "Doc Attachment FactBox"
                 History."File Name" := DocumentAttachment."File Name";
                 History."User ID" := UserId;
                 History."Date and Time" := CurrentDateTime;
-                History.Insert();
+
+                // Populate additional fields based on table type
                 case History."Table ID" of
                     Database::AANActivity:
                         begin
                             if Act.Get(History."Document No.") then begin
+                                History."Vendor No." := Act."Vendor No.";
+                                History."Customer No." := Act."Customer No.";
+                                History."Item No." := Act."Item No.";
+
                                 if Act."Enquiry No." <> '' then
                                     EnqPage.UpdateAttachmentMetadataEnquiry(Act."Enquiry No.", 'Activity', History."Document No.", History."File Name", History."Entry No.");
                                 if Act."Project No." <> '' then
                                     ProjectPage.UpdateAttachmentMetadataProject(Act."Project No.", 'Activity', History."Document No.", History."File Name", History."Entry No.");
                             end;
-
                         end;
                     Database::Job:
                         begin
@@ -149,6 +150,7 @@ page 50219 "Doc Attachment FactBox"
                         end;
                 end;
 
+                History.Insert();
                 GDocuHistory := History;
                 If Int1 = 0 then
                     Int1 := History."Entry No.";

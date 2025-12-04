@@ -12,6 +12,7 @@ page 50200 "AANActivity List"
     ModifyAllowed = false;
     DeleteAllowed = false;
     InsertAllowed = false;
+    Editable = false;
 
     layout
     {
@@ -81,6 +82,28 @@ page 50200 "AANActivity List"
                 {
                     ToolTip = 'Specifies the value of the Table Name field.', Comment = '%';
                 }
+            }
+        }
+    }
+
+    actions
+    {
+        area(Creation)
+        {
+            action(New)
+            {
+                Visible = false;
+            }
+        }
+        area(Processing)
+        {
+            action(Edit)
+            {
+                Visible = false;
+            }
+            action(Delete)
+            {
+                Visible = false;
             }
         }
     }

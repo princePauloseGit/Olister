@@ -17,6 +17,8 @@ page 50201 "Activity Card"
     PageType = Card;
     SourceTable = AANActivity;
     PopulateAllFields = true;
+    DeleteAllowed = false;
+    InsertAllowed = false;
 
     layout
     {
@@ -30,6 +32,7 @@ page 50201 "Activity Card"
                 {
                     ToolTip = 'Specifies the value of the Description field.', Comment = '%';
                     ColumnSpan = 100;
+                    ShowMandatory = true;
                 }
                 // field(Description; Rec.Description)
                 // {
@@ -37,6 +40,7 @@ page 50201 "Activity Card"
                 // }
                 field("Activity type"; Rec."Activity Type")
                 {
+                    ShowMandatory = true;
                     trigger OnValidate()
                     var
                         L_TaskController: Codeunit "Tasks & Activity Controller";
@@ -389,6 +393,12 @@ page 50201 "Activity Card"
 
         area(FactBoxes)
         {
+            part(ActivityNavigationFactbox; "Activity Details Navigation")
+            {
+                ApplicationArea = All;
+                Caption = 'Activity Navigation';
+                SubPageLink = "Activity No" = field("Activity No");
+            }
             part(DocAttachmentFactbox;
             "Doc Attachment FactBox")
             {
@@ -414,6 +424,10 @@ page 50201 "Activity Card"
     {
         area(Creation)
         {
+            action(New)
+            {
+                Visible = false;
+            }
 
             group(Companies)
             {
@@ -636,6 +650,17 @@ page 50201 "Activity Card"
                     end;
 
                 end;
+            }
+        }
+        area(Processing)
+        {
+            action(Edit)
+            {
+                Visible = false;
+            }
+            action(Delete)
+            {
+                Visible = false;
             }
         }
         area(Promoted)

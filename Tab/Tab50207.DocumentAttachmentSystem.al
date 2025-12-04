@@ -36,9 +36,10 @@ table 50207 "Doc Attachment History"
         {
             DataClassification = CustomerContent;
         }
-        field(8; "Document Purpose"; Text[1024])
+        field(8; "Document Purpose"; Code[20])
         {
             DataClassification = CustomerContent;
+            TableRelation = "Document Purpose";
         }
         field(9; "Document Tag"; Text[50])
         {
@@ -60,6 +61,108 @@ table 50207 "Doc Attachment History"
         field(12; "Table Name"; Text[30])
         {
             Caption = 'Table Name';
+            DataClassification = CustomerContent;
+        }
+        field(13; "Document Purpose Description"; Text[100])
+        {
+            Caption = 'Document Purpose Description';
+            DataClassification = CustomerContent;
+        }
+
+        field(14; "Vendor No."; Code[20])
+        {
+            Caption = 'Vendor No.';
+            DataClassification = CustomerContent;
+            TableRelation = Vendor;
+        }
+        field(15; "Customer No."; Code[20])
+        {
+            Caption = 'Customer No.';
+            DataClassification = CustomerContent;
+            TableRelation = Customer;
+        }
+        field(16; "Item No."; Code[20])
+        {
+            Caption = 'Item No.';
+            DataClassification = CustomerContent;
+            TableRelation = Item;
+        }
+        field(17; "Vendor Name"; Text[100])
+        {
+            Caption = 'Vendor Name';
+            FieldClass = FlowField;
+            CalcFormula = lookup(Vendor.Name where("No." = field("Vendor No.")));
+            Editable = false;
+        }
+        field(18; "Customer Name"; Text[100])
+        {
+            Caption = 'Customer Name';
+            FieldClass = FlowField;
+            CalcFormula = lookup(Customer.Name where("No." = field("Customer No.")));
+            Editable = false;
+        }
+        field(19; "Item Description"; Text[100])
+        {
+            Caption = 'Item Description';
+            FieldClass = FlowField;
+            CalcFormula = lookup(Item.Description where("No." = field("Item No.")));
+            Editable = false;
+        }
+
+        // Fields from AANActivity table
+        field(50; "Activity Title"; Text[250])
+        {
+            DataClassification = CustomerContent;
+        }
+        field(51; "Activity Type"; Code[20])
+        {
+            DataClassification = CustomerContent;
+            TableRelation = "Activity Type";
+        }
+        field(52; "Activity Created By"; Text[100])
+        {
+            DataClassification = CustomerContent;
+        }
+        field(53; "Activity Status"; Option)
+        {
+            OptionMembers = Open,WIP,Closed;
+            OptionCaption = 'Open,Work In Progress,Closed';
+            DataClassification = CustomerContent;
+        }
+        field(54; "Activity Assigned To"; Text[100])
+        {
+            DataClassification = CustomerContent;
+        }
+        field(55; "Activity Accountable"; Text[100])
+        {
+            DataClassification = CustomerContent;
+        }
+        field(56; "Activity Due Date"; Date)
+        {
+            DataClassification = CustomerContent;
+        }
+        field(57; "Activity Project No."; Code[20])
+        {
+            DataClassification = CustomerContent;
+        }
+        field(58; "Activity Project Name"; Text[100])
+        {
+            DataClassification = CustomerContent;
+        }
+        field(59; "Activity Enquiry No."; Code[20])
+        {
+            DataClassification = CustomerContent;
+        }
+        field(60; "Activity Enquiry Name"; Text[100])
+        {
+            DataClassification = CustomerContent;
+        }
+        field(61; "Activity Related Issue No"; Code[20])
+        {
+            DataClassification = CustomerContent;
+        }
+        field(62; "Activity Tags"; Text[250])
+        {
             DataClassification = CustomerContent;
         }
     }
