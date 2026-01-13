@@ -20,5 +20,11 @@ tableextension 50201 "User Setup Extension" extends "User Setup"
             DataClassification = CustomerContent;
 
         }
+        field(50204; "User Email Signature"; Text[1024])
+        {
+            Caption = 'Email Signature';
+            DataClassification = CustomerContent;
+
+        }
     }
 }

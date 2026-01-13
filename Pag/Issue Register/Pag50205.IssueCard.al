@@ -11,6 +11,8 @@ page 50205 "Issue Card"
     Caption = 'Issue Card';
     PageType = Card;
     SourceTable = "Issue Register";
+    InsertAllowed = false;
+    DeleteAllowed = false;
 
     layout
     {

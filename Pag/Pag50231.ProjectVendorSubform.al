@@ -5,7 +5,7 @@ using Microsoft.CRM.Task;
 page 50231 "Project Vendor Subform"
 {
     ApplicationArea = All;
-    Caption = 'Project Vendor Subform';
+    Caption = 'Project Suppliers Subform';
     PageType = ListPart;
     SourceTable = "Project vendors";
     Editable = true;
@@ -20,11 +20,13 @@ page 50231 "Project Vendor Subform"
                 field("Vendor Name"; Rec."Vendor Name")
                 {
                     ToolTip = 'Specifies the value of the Vendor Name field.', Comment = '%';
+                    Caption = 'Supplier Name';
 
                 }
                 field("Vendor No"; Rec."Vendor No")
                 {
                     ToolTip = 'Specifies the value of the Vendor No field.', Comment = '%';
+                    Caption = 'Supplier No';
                 }
                 field("Activity No"; Rec."Activities")
                 {

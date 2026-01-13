@@ -6,7 +6,7 @@ table 50201 "Activity Type"
     DrillDownPageId = 50202;
     fields
     {
-        field(1; "Activity Code"; Code[20])
+        field(1; "Activity Code"; Code[30])
         {
             Caption = 'Activity Code';
             DataClassification = CustomerContent;

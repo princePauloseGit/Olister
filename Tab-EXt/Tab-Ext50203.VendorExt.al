@@ -9,7 +9,7 @@ tableextension 50203 VendorExt extends Vendor
     {
         field(50200; "Type"; Text[20])
         {
-            Caption = 'Type';
+            Caption = 'Vendor Type';
             DataClassification = CustomerContent;
             TableRelation = Type;
         }
@@ -17,6 +17,25 @@ tableextension 50203 VendorExt extends Vendor
         {
             Caption = 'Status';
             DataClassification = CustomerContent;
+
+            trigger OnValidate()
+            begin
+                if Rec.Status = Rec.Status::Inactive then begin
+                    Rec.Blocked := Rec.Blocked::All;
+                end;
+
+                // if Rec.Status = Rec.Status::Blacklisted then begin
+                //     Rec.Blocked := Rec.Blocked::Invoice;
+                // end;
+
+                if Rec.Status = Rec.Status::"Live / Normal" then begin
+                    Rec.Blocked := Rec.Blocked::" ";
+                end;
+
+                if Rec.Status = Rec.Status::Prime then begin
+                    Rec.Blocked := Rec.Blocked::" ";
+                end;
+            end;
         }
         field(50202; Category; Text[50])
         {
@@ -59,6 +78,11 @@ tableextension 50203 VendorExt extends Vendor
             Caption = 'No. of All Issues';
             Editable = false;
             FieldClass = FlowField;
+        }
+        field(50213; "Last Interaction"; DateTime)
+        {
+            Caption = 'Last Interaction';
+            Editable = false;
         }
 
 

@@ -17,9 +17,7 @@ page 50218 "Projects ListPart factbox"
     PageType = ListPart;
     //  SourceTable = "Enquiry Lines";
     SourceTable = Job;
-    DeleteAllowed = false;
-    InsertAllowed = false;
-    ModifyAllowed = false;
+    PopulateAllFields = true;
     layout
     {
         area(Content)

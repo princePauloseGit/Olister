@@ -1,9 +1,12 @@
 namespace TasksActivityModule.TasksActivityModule;
 
 using Microsoft.Sales.Customer;
+using Microsoft.CRM.Contact;
+using Microsoft.CRM.BusinessRelation;
 using Microsoft.Projects.Project.Job;
 using Microsoft.Inventory.Item;
 using Microsoft.CRM.Task;
+using Microsoft.CRM.Interaction;
 using Microsoft.Purchases.Vendor;
 
 pageextension 50200 "AACustomer card" extends "Customer Card"
@@ -35,10 +38,137 @@ pageextension 50200 "AACustomer card" extends "Customer Card"
                 ToolTip = 'Specifies the category of the customer.';
             }
         }
+        addafter("Salesperson Code")
+        {
+            field("Account Manager"; Rec."Account Manager")
+            {
+                ApplicationArea = All;
+                Caption = 'Account Manager';
+                ToolTip = 'Specifies the Account Manager for the customer.';
+            }
+        }
+
+        addafter("Home Page")
+        {
+            field("Company Reg. No."; Rec."Company Reg. No.")
+            {
+                ApplicationArea = All;
+                Caption = 'Company Reg. No.';
+                ToolTip = 'Specifies the Company Registration Number for the customer.';
+            }
+            field("NCAGE Code"; Rec."NCAGE Code")
+            {
+                ApplicationArea = All;
+                Caption = 'NCAGE Code';
+                ToolTip = 'Specifies the NCAGE Code for the customer.';
+            }
+            field("Duns No."; Rec."Duns No.")
+            {
+                ApplicationArea = All;
+                Caption = 'DUNS No';
+                ToolTip = 'Specifies the DUNS Number for the customer.';
+            }
+        }
         modify("Attached Documents List")
         {
             Visible = false;
         }
+        movebefore("Primary Contact No."; ContactName)
+        modify(Blocked)
+        {
+            Visible = false;
+        }
+
+        modify("Salesperson Code")
+        {
+            Caption = 'Account Manager';
+        }
+
+        modify("Country/Region Code")
+        {
+            Caption = 'Country / Region';
+            ToolTip = 'To change the Country/Region, you must change the Country/Region Code.';
+        }
+        addbefore("Country/Region Code")
+        {
+            field("Country/Region"; Rec."Country/Region")
+            {
+                ApplicationArea = All;
+                Caption = 'Country / Region Name';
+                ToolTip = 'To change the country/region name, you must change the Country/Region Code.';
+                Editable = false;
+            }
+        }
+        modify(ContactName)
+        {
+            Visible = true;
+            ToolTip = 'Specifies the Primary Contact Name. Click on the name to open the Contact details';
+            // DrillDown = true;
+
+
+            trigger OnDrillDown()
+            var
+                ContactRec: Record Contact;
+                Page_ContactCard: Page "Contact Card";
+            begin
+                Clear(ContactRec);
+                if ContactRec.Get(Rec."Primary Contact No.") then begin
+                    Page_ContactCard.SetRecord(ContactRec);
+                    Page_ContactCard.RunModal();
+                end else
+                    Message('No Contact found for this Customer.');
+            end;
+        }
+
+        modify("Primary Contact No.")
+        {
+            ToolTip = 'Click on [...] near Contact Code to change the Primary Contact for this customer';
+            Visible = true;
+        }
+        addafter("E-Mail")
+        {
+            field("CGE-Mail"; Rec."CGE-Mail")
+            {
+                ApplicationArea = All;
+                Caption = 'E-Mail';
+                ToolTip = 'Specifies an alternate e-mail address for the customer.';
+            }
+        }
+        modify("E-Mail")
+        {
+            Visible = false;
+        }
+
+        addafter(MobilePhoneNo)
+        {
+            field("CGMobilePhoneNo"; Rec.CGMobilePhone)
+            {
+                ApplicationArea = All;
+                Caption = 'Mobile Phone No.';
+                ToolTip = 'Specifies an alternate mobile phone number for the customer.';
+            }
+        }
+        modify(MobilePhoneNo)
+        {
+            Visible = false;
+        }
+        // {
+        //     field(ContactCode; Rec."Contact Code")
+        //     {
+        //         ApplicationArea = All;
+        //         Caption = 'Contact';
+        //         ToolTip = 'Specifies the contact person for the customer. Use the lookup to select a contact from the contact list.';
+        //         Editable = false;
+        //         trigger OnLookup(var Text:Text[250])
+        //         var
+        //             Rec_Contact: Record Contact;
+        //             Rec_ContactBusinessRelation: Record "Contact Business Relation";
+        //             Rec_Contact2: Record Contact;
+        //         begin
+        //             LookupContactListExt();
+        //         end;
+        //     }
+        // }
         addBefore("Attached Documents List")
         {
             part(Activity1; "Activity List Part FactBox")
@@ -68,6 +198,74 @@ pageextension 50200 "AACustomer card" extends "Customer Card"
         //         ToolTip = 'Specifies the Surname of the customer contact.';
         //     }
         // }
+
+
+        addafter(Statistics)
+        {
+            group(Financialinformation)
+            {
+                Caption = 'Financial Information';
+                field(AABlocked; Rec.Blocked)
+                {
+                    ApplicationArea = All;
+                    Caption = 'Blocked Status';
+                    ToolTip = 'Specifies the blocked status of the customer.';
+                    Editable = false;
+                }
+            }
+        }
+        // moveafter(AABlocked; "Balance (LCY)")
+        // {
+
+        // }
+        // moveafter(Balance (LCY); "Credit Limit (LCY)")
+        // {
+
+        // }
+
+        movefirst(Financialinformation; "Balance (LCY)")
+        moveafter("Balance (LCY)"; "Credit Limit (LCY)")
+        moveafter("Credit Limit (LCY)"; "IC Partner Code")
+        moveafter("IC Partner Code"; BalanceAsVendor)
+        moveafter(BalanceAsVendor; "Privacy Blocked")
+        moveafter("Privacy Blocked"; "Service Zone Code")
+        moveafter("Service Zone Code"; "Responsibility Center")
+        moveafter("Responsibility Center"; TotalSales2)
+        moveafter(TotalSales2; "Document Sending Profile")
+        moveafter("Document Sending Profile"; "CustSalesLCY - CustProfit - AdjmtCostLCY")
+        moveafter("CustSalesLCY - CustProfit - AdjmtCostLCY"; AdjCustProfit)
+        moveafter(AdjCustProfit; AdjProfitPct)
+        moveafter(AdjProfitPct; "Balance Due")
+        moveafter("Balance Due"; "Balance Due (LCY)")
+
+        movelast(Financialinformation; "Last Date Modified")
+        movelast(Financialinformation; "Disable Search by Name")
+
+        addlast(General)
+        {
+            field("Last Interaction"; Rec."Last Interaction")
+            {
+                Caption = 'Last Interaction';
+                Editable = false;
+                ApplicationArea = All;
+
+                DrillDown = true;
+                trigger OnDrillDown()
+                var
+                    Rec_Interaction: Record "Interaction Log Entry";
+                begin
+                    Rec_Interaction.Reset();
+                    Rec_Interaction.SetFilter("Contact No.", '%1', Rec."Primary Contact No.");
+                    if Rec_Interaction.FindFirst() then
+                        PAGE.Run(PAGE::"Interaction Log Entries", Rec_Interaction);
+                end;
+            }
+        }
+
+        modify(Control149)
+        {
+            Caption = 'Company Picture';
+        }
     }
     actions
     {
@@ -430,4 +628,35 @@ pageextension 50200 "AACustomer card" extends "Customer Card"
 
     }
 
+    trigger OnAfterGetRecord()
+    var
+        Rec_Interaction: Record "Interaction Log Entry";
+    begin
+
+        Rec_Interaction.Reset();
+        Rec_Interaction.SetRange("Contact No.", Rec."Primary Contact No.");
+        if Rec_Interaction.FindLast() then
+            Rec."Last Interaction" := Rec_Interaction.SystemCreatedAt
+        else
+            Rec."Last Interaction" := 0DT;
+
+    end;
+
+    procedure LookupContactListExt()
+    var
+        ContactBusinessRelation: Record "Contact Business Relation";
+        ContactForLookup: Record Contact;
+        TempCustomer: Record Customer temporary;
+        IsHandled: Boolean;
+    begin
+        ContactForLookup.FilterGroup(2);
+        if ContactBusinessRelation.FindByRelation(ContactBusinessRelation."Link to Table"::Customer, Rec."No.") then
+            ContactForLookup.SetRange("Company No.", ContactBusinessRelation."Contact No.")
+        else
+            ContactForLookup.SetRange("Company No.", '');
+
+        if Rec."Primary Contact No." <> '' then
+            if ContactForLookup.Get(Rec."Primary Contact No.") then;
+        Page.RunModal(0, ContactForLookup)
+    end;
 }

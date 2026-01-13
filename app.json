@@ -1,6 +1,6 @@
 {
   "id": "2df1d830-8340-45e4-972b-4d0f301c38a9",
-  "name": "Activity Module",
+  "name": "Chiltern Global customization",
   "publisher": "Addend Analytics",
   "version": "1.0.0.4",
   "brief": "",
@@ -10,14 +10,16 @@
   "help": "",
   "url": "",
   "logo": "",
-  "dependencies": [],
+  "dependencies": [
+    
+  ],
   "screenshots": [],
   "platform": "1.0.0.0",
   "application": "26.0.0.0",
   "idRanges": [
     {
       "from": 50200,
-      "to": 50999
+      "to": 50300
     }
   ],
   "resourceExposurePolicy": {

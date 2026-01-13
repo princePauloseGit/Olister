@@ -184,9 +184,9 @@ page 50217 Enquiry
                     RunObject = page "Customer List";
                     //  RunPageLink= 
                 }
-                action(Vendors)
+                action(Suppliers)
                 {
-                    Caption = 'Vendors';
+                    Caption = 'Suppliers';
                     ApplicationArea = all;
                     Image = Vendor;
                     RunObject = page "Vendor List";
@@ -388,7 +388,7 @@ page 50217 Enquiry
                 Caption = 'Companies';
                 actionref(Customer_Promoted; Customers)
                 { }
-                actionref(Vendor_Promoted; Vendors)
+                actionref(Vendor_Promoted; Suppliers)
                 { }
             }
             group(Projects_Promoted)

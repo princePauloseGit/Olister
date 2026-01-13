@@ -40,6 +40,50 @@ page 50242 "CG Role center"
             }
         }
     }
+
+    actions
+    {
+        area(creation)
+        {
+            action("Customers")
+            {
+                ApplicationArea = Basic, Suite;
+                Caption = 'Customers';
+                Image = NewSalesQuote;
+                RunObject = Page "Customer Card";
+                RunPageMode = Create;
+                ToolTip = 'Create a new customer card.';
+            }
+            action("Supplier")
+            {
+                ApplicationArea = Basic, Suite;
+                Caption = 'Supplier';
+                Image = NewSalesQuote;
+                RunObject = Page "Vendor Card";
+                RunPageMode = Create;
+                ToolTip = 'Create a new vendor card.';
+            }
+            action("Enquiry")
+            {
+                ApplicationArea = Basic, Suite;
+                Caption = 'Enquiry ';
+                Image = NewSalesQuote;
+                RunObject = Page "Enquiry";
+                RunPageMode = Create;
+                ToolTip = 'Create a new enquiry card.';
+            }
+            action("Project")
+            {
+                ApplicationArea = Basic, Suite;
+                Caption = 'Project';
+                Image = NewSalesQuote;
+                RunObject = Page "Job Card";
+                RunPageMode = Create;
+                ToolTip = 'Create a new project card.';
+            }
+
+        }
+    }
 }
 
 

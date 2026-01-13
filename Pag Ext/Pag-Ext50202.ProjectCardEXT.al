@@ -28,6 +28,10 @@ pageextension 50202 "Project Card EXT" extends "Job Card"
         {
             Visible = false;
         }
+        modify("Starting Date")
+        {
+            Visible = false;
+        }
 
 
         movebefore("No."; Description)
@@ -119,6 +123,11 @@ pageextension 50202 "Project Card EXT" extends "Job Card"
                 Caption = 'Item Status';
                 ToolTip = 'Specifies the status of the project.';
                 Importance = Standard;
+            }
+            field("CGStarting Date"; Rec."Starting Date")
+            {
+                ApplicationArea = all;
+                Caption = 'Start Date';
             }
             field("Review Date"; Rec."Review Date")
             {

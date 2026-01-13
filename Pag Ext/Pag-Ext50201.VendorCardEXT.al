@@ -6,18 +6,19 @@ using ChilternGlobalBC.ChilternGlobalBC;
 using Microsoft.Inventory.Item;
 using Microsoft.Projects.Project.Job;
 using Microsoft.Sales.Customer;
+using Microsoft.CRM.Interaction;
 
 pageextension 50201 "Vendor Card EXT" extends "Vendor Card"
 {
     layout
     {
         movebefore("No."; Name)
-        addafter("Privacy Blocked")
+        addafter("No.")
         {
             field("Type"; Rec."Type")
             {
                 ApplicationArea = All;
-                Caption = 'Type';
+                Caption = 'Vendor Type';
                 ToolTip = 'Specifies the type of customer.';
             }
             field(Status; Rec.Status)
@@ -34,13 +35,39 @@ pageextension 50201 "Vendor Card EXT" extends "Vendor Card"
             }
         }
 
+        addlast(General)
+        {
+            field("Last Interaction"; Rec."Last Interaction")
+            {
+                ApplicationArea = All;
+                Caption = 'Last Interaction';
+                DrillDown = true;
+                trigger OnDrillDown()
+                var
+                    Rec_Interaction: Record "Interaction Log Entry";
+                begin
+                    Rec_Interaction.Reset();
+                    Rec_Interaction.SetFilter("Contact No.", '%1', Rec."Primary Contact No.");
+                    if Rec_Interaction.FindFirst() then
+                        PAGE.Run(PAGE::"Interaction Log Entries", Rec_Interaction);
+                end;
+            }
+        }
+
         modify("Attached Documents List")
         {
             Visible = false;
         }
+
+        modify("Purchaser Code")
+        {
+            Caption = 'Account Manager';
+        }
+        moveafter(Category; "Purchaser Code")
+        moveafter("Purchaser Code"; "Last Date Modified")
+
         addBefore("Attached Documents List")
         {
-
             part(DocAttachmentFactbox; "Doc Attachment FactBox")
             {
                 UpdatePropagation = Both;
@@ -64,8 +91,110 @@ pageextension 50201 "Vendor Card EXT" extends "Vendor Card"
                 ApplicationArea = All;
                 SubPageLink = "No." = field("No.");
             }
+
         }
+
+        addafter(Receiving)
+        {
+            group(FinancialInformation)
+            {
+                Caption = 'Financial Information';
+
+                field("CGBalance (LCY)"; Rec."Balance (LCY)")
+                {
+                    ApplicationArea = All;
+                    Caption = 'Balance (LCY)';
+                    ToolTip = 'Specifies the current balance for the vendor in local currency.';
+                }
+                field("Balance Due"; Rec."Balance Due")
+                {
+                    ApplicationArea = All;
+                    Caption = 'Balance Due';
+                    ToolTip = 'Specifies the balance due for the vendor.';
+                }
+                field("CGBalance Due (LCY)"; Rec."Balance Due (LCY)")
+                {
+                    ApplicationArea = All;
+                    Caption = 'Balance Due (LCY)';
+                    ToolTip = 'Specifies the balance due for the vendor in local currency.';
+                }
+                field("CGPrivacy Blocked"; Rec."Privacy Blocked")
+                {
+                    ApplicationArea = All;
+                    Caption = 'Privacy Blocked';
+                    ToolTip = 'Indicates whether the vendor is blocked for privacy reasons.';
+
+                }
+            }
+        }
+
+
+        modify(Blocked)
+        {
+            Visible = false;
+        }
+
+        modify("Balance (LCY)")
+        {
+            Visible = false;
+        }
+
+        // modify("Balance Due")
+        // {
+        //     Visible = false;
+        // }
+        modify("Balance Due (LCY)")
+        {
+            Visible = false;
+        }
+        modify("Privacy Blocked")
+        {
+            Visible = false;
+        }
+
+        movelast(FinancialInformation; "Document Sending Profile")
+        movelast(FinancialInformation; "Search Name")
+        movelast(FinancialInformation; "IC Partner Code")
+        movelast(FinancialInformation; "Responsibility Center")
+        movelast(FinancialInformation; "Disable Search by Name")
+        movelast(FinancialInformation; "Company Size Code")
+        // movelast(FinancialInformation; "Sust. Cert. Name")
+        // movelast(FinancialInformation; "Sust. Cert. No.")
+        // movelast(FinancialInformation; "Carbon Pricing Paid")
+        movelast(FinancialInformation; "Last Date Modified")
+        movelast(FinancialInformation; BalanceAsCustomer)
+
+        movebefore("Country/Region Code"; City)
+        moveafter(City; County)
+
+        movefirst(Contact; "Our Account No.")
+        moveafter("Our Account No."; Control16)
+        moveafter(Control16; "Primary Contact No.")
+
+        modify("Primary Contact No.")
+        {
+            Caption = 'Contact Code';
+        }
+        moveafter("Primary Contact No."; "Phone No.")
+        moveafter("Phone No."; MobilePhoneNo)
+        moveafter(MobilePhoneNo; "E-Mail")
+        moveafter("E-Mail"; "Fax No.")
+        moveafter("Fax No."; "Home Page")
+
+
+        modify("Our Account No.")
+        {
+            Caption = 'Chiltern Vendor Account No.';
+        }
+
+
+
+
+
     }
+
+
+
     actions
     {
         addafter("&Purchases")
@@ -434,5 +563,19 @@ pageextension 50201 "Vendor Card EXT" extends "Vendor Card"
         }
 
     }
+
+    trigger OnAfterGetRecord()
+    var
+        Rec_Interaction: Record "Interaction Log Entry";
+    begin
+
+        Rec_Interaction.Reset();
+        Rec_Interaction.SetRange("Contact No.", Rec."Primary Contact No.");
+        if Rec_Interaction.FindLast() then
+            Rec."Last Interaction" := Rec_Interaction.SystemCreatedAt
+        else
+            Rec."Last Interaction" := 0DT;
+
+    end;
 
 }

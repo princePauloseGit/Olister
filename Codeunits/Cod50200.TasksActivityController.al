@@ -7,6 +7,7 @@ using Microsoft.Foundation.Reporting;
 using Microsoft.Inventory.Item;
 using Microsoft.Projects.Project.Planning;
 using Microsoft.Purchases.Vendor;
+using System.Security.User;
 using Microsoft.Purchases.History;
 using System.Email;
 
@@ -120,7 +121,7 @@ codeunit 50200 "Tasks & Activity Controller"
             Issue.Validate(VendorNo, Project."Vendor No.");
         Issue.Validate("CustomerNo.", Activity."Customer No.");
         case Activity."Table Name" of
-            'Vendor':
+            'Supplier':
                 Issue.Validate(VendorNo, Activity."Record No.");
             'Customer':
                 Issue.Validate("CustomerNo.", Activity."Record No.");
@@ -259,10 +260,20 @@ codeunit 50200 "Tasks & Activity Controller"
         Body: Text;
         EmailOutbox: Record "Email Outbox";
         ActURL: Text;
+        Rec_UserSetup: Record "User Setup";
     begin
+        Clear(Rec_UserSetup);
+        Rec_UserSetup.SetRange("User ID", UserId());
+        if Rec_UserSetup.FindFirst() then begin
+            Rec_UserSetup.TestField("User Email Signature");
+        end
+        else begin
+            Error('User Setup not found for the current user. Please set up your email configuration in User Setup.');
+        end;
+
         ActURL := GetUrl(ClientType::Web, CompanyName, ObjectType::Page, Page::"Activity Card", Activity, false);
-        Body := StrSubstNo('<p>Hello,</p><p>Activity No: %1</p><p><a href="' + ActURL + '" target="_blank">Open Activity</a></p><p>Thanks and have a great day!</p>', Activity."Activity No");
-        EmailMessage.Create('', 'Email Confirmation ' + Activity."Activity No", Body, true);
+        Body := StrSubstNo('<p>Hello,</p><p>Activity No: %1</p><p><a href="' + ActURL + '" target="_blank">Open Activity</a></p><p>Thanks and have a great day!</p><br/><br/><br/>' + Rec_UserSetup."User Email Signature", Activity."Activity No");
+        EmailMessage.Create('', 'Chiltern Global - Activity Reference - ' + Activity."Activity No", Body, true);
         AddAttachmentToActivityEmail(EmailMessage, Activity);
         Email.OpenInEditor(EmailMessage);
 

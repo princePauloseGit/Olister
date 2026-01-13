@@ -5,7 +5,7 @@ table 50200 AANActivity
     DrillDownPageId = 50200;
     fields
     {
-        field(1; "Activity No"; Code[10])
+        field(1; "Activity No"; Code[30])
         {
             Caption = 'Activity No';
             DataClassification = CustomerContent;

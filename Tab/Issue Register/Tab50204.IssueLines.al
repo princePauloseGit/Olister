@@ -6,7 +6,7 @@ table 50204 "Issue Lines"
     fields
     {
 
-        field(1; "Issue No"; Code[10])
+        field(1; "Issue No"; Code[30])
         {
             Caption = 'Issue No';
             DataClassification = CustomerContent;

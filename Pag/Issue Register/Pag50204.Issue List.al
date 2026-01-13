@@ -13,6 +13,8 @@ page 50204 "Issues List"
     CardPageId = 50205;
     ModifyAllowed = false;
     Editable = false;
+    InsertAllowed = false;
+    DeleteAllowed = false;
 
     layout
     {

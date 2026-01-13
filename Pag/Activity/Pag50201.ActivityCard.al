@@ -368,26 +368,26 @@ page 50201 "Activity Card"
             group("Sales Price List Line")
             {
 
-                part("Sales Price List Lines"; "Activity Price List Subform")
-                {
-                    ApplicationArea = Basic, Suite;
-                    Visible = (CanCreateSPL) AND (SalesListVisible);
-                    UpdatePropagation = Both;
-                    Caption = 'Sales Price List Lines';
-                    SubPageLink = "Price List Code" = field("Sales Price List code"), "Project No." = field("Project No."), "Source No." = field("Customer No.");
-                }
+                // part("Sales Price List Lines"; "Activity Price List Subform")
+                // {
+                //     ApplicationArea = Basic, Suite;
+                //     Visible = (CanCreateSPL) AND (SalesListVisible);
+                //     UpdatePropagation = Both;
+                //     Caption = 'Sales Price List Lines';
+                //     SubPageLink = "Price List Code" = field("Sales Price List code"), "Project No." = field("Project No."), "Source No." = field("Customer No.");
+                // }
             }
             group("Purchase Price List Lines")
             {
-                part("Purch. Price List Lines"; "Activity Price List Subform")
-                {
-                    ApplicationArea = all;
-                    Visible = (CanCreatePPL) AND (PurchListVisible);
-                    Caption = 'Purchase Price List Lines';
-                    UpdatePropagation = Both;
-                    SubPageView = where("Price Type" = filter("Price Type"::Purchase));
-                    SubPageLink = "Price List Code" = field("Purchase Price List code"), "Project No." = field("Project No."), "Source No." = field("Vendor No."), "Price Type" = filter("Price Type"::Purchase);
-                }
+                // part("Purch. Price List Lines"; "Activity Price List Subform")
+                // {
+                //     ApplicationArea = all;
+                //     Visible = (CanCreatePPL) AND (PurchListVisible);
+                //     Caption = 'Purchase Price List Lines';
+                //     UpdatePropagation = Both;
+                //     SubPageView = where("Price Type" = filter("Price Type"::Purchase));
+                //     SubPageLink = "Price List Code" = field("Purchase Price List code"), "Project No." = field("Project No."), "Source No." = field("Vendor No."), "Price Type" = filter("Price Type"::Purchase);
+                // }
             }
         }
 

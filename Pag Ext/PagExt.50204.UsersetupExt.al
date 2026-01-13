@@ -19,6 +19,11 @@ pageextension 50204 "User Setup Extension" extends "User Setup"
                 ApplicationArea = Basic, Suite;
                 ToolTip = 'Specify if the user has rights to share activities with others.';
             }
+            field("User Email Signature"; Rec."User Email Signature")
+            {
+                ApplicationArea = Basic, Suite;
+                ToolTip = 'Specify the email signature for the user.';
+            }
         }
 
     }

@@ -12,7 +12,7 @@ table 50202 "Tasks & Activities Setup"
             AllowInCustomizations = Never;
             Caption = 'PK';
         }
-        field(2; "Activity No"; Code[20])
+        field(2; "Activity No"; Code[30])
         {
             Caption = 'Activity No';
             TableRelation = "No. Series";
