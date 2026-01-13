@@ -97,6 +97,54 @@ pageextension 50205 ItemCardExtn extends "Item Card"
                 ApplicationArea = All;
             }
         }
+        addafter("Product Group Code")
+        {
+            field("No. of Sizes"; Rec."No. of Sizes")
+            {
+                ApplicationArea = All;
+                ToolTip = 'Specifies the number of distinct sizes for this item.';
+                DrillDown = true;
+
+                trigger OnDrillDown()
+                var
+                    ItemAttrComb: Record "Item Attribute Combination";
+                begin
+                    ItemAttrComb.SetRange("Item No.", Rec."No.");
+                    ItemAttrComb.SetFilter("Size Code", '<>%1', '');
+                    Page.Run(Page::"Item Attribute Combinations", ItemAttrComb);
+                end;
+            }
+            field("No. of Colors"; Rec."No. of Colors")
+            {
+                ApplicationArea = All;
+                ToolTip = 'Specifies the number of distinct colors for this item.';
+                DrillDown = true;
+
+                trigger OnDrillDown()
+                var
+                    ItemAttrComb: Record "Item Attribute Combination";
+                begin
+                    ItemAttrComb.SetRange("Item No.", Rec."No.");
+                    ItemAttrComb.SetFilter("Color Code", '<>%1', '');
+                    Page.Run(Page::"Item Attribute Combinations", ItemAttrComb);
+                end;
+            }
+            field("No. of Materials"; Rec."No. of Materials")
+            {
+                ApplicationArea = All;
+                ToolTip = 'Specifies the number of distinct materials for this item.';
+                DrillDown = true;
+
+                trigger OnDrillDown()
+                var
+                    ItemAttrComb: Record "Item Attribute Combination";
+                begin
+                    ItemAttrComb.SetRange("Item No.", Rec."No.");
+                    ItemAttrComb.SetFilter("Material Code", '<>%1', '');
+                    Page.Run(Page::"Item Attribute Combinations", ItemAttrComb);
+                end;
+            }
+        }
         modify("Attached Documents List")
         {
             Visible = false;
@@ -492,6 +540,11 @@ pageextension 50205 ItemCardExtn extends "Item Card"
             }
         }
     }
+    trigger OnAfterGetCurrRecord()
+    begin
+        UpdateAttributeCounts();
+    end;
+
     procedure CopyAttributesToNextVersion(NextItem: Record Item)
     var
         ItemAttributeValMapping: Record "Item Attribute Value Mapping";
@@ -528,6 +581,13 @@ pageextension 50205 ItemCardExtn extends "Item Card"
         ItemVariant.SetRange("Item No.", ToItemNo);
         if not ItemVariant.IsEmpty() then
             ItemVariant.ModifyAll("Item Id", ToItemId);
+    end;
+
+    local procedure UpdateAttributeCounts()
+    begin
+        Rec."No. of Sizes" := Rec.GetDistinctSizesCount();
+        Rec."No. of Colors" := Rec.GetDistinctColorsCount();
+        Rec."No. of Materials" := Rec.GetDistinctMaterialsCount();
     end;
 
 }

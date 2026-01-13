@@ -161,6 +161,27 @@ tableextension 50204 ItemExtn extends Item
             CalcFormula = count(Job where("Item No" = field("No.")));
             FieldClass = FlowField;
         }
+        field(50219; "No. of Sizes"; Integer)
+        {
+            Caption = 'No. of Sizes';
+            FieldClass = Normal;
+            DataClassification = CustomerContent;
+            Editable = false;
+        }
+        field(50220; "No. of Colors"; Integer)
+        {
+            Caption = 'No. of Colors';
+            FieldClass = Normal;
+            DataClassification = CustomerContent;
+            Editable = false;
+        }
+        field(50221; "No. of Materials"; Integer)
+        {
+            Caption = 'No. of Materials';
+            FieldClass = Normal;
+            DataClassification = CustomerContent;
+            Editable = false;
+        }
     }
     procedure UpdateItemversionMaster()
     var
@@ -202,5 +223,59 @@ tableextension 50204 ItemExtn extends Item
                 end;
             until ItemAttributeValMapping.Next() = 0;
 
+    end;
+
+    procedure GetDistinctSizesCount(): Integer
+    var
+        ItemAttrComb: Record "Item Attribute Combination";
+        TempSizeCode: Record "Item Size" temporary;
+    begin
+        ItemAttrComb.SetRange("Item No.", "No.");
+        ItemAttrComb.SetFilter("Size Code", '<>%1', '');
+        if ItemAttrComb.FindSet() then
+            repeat
+                if not TempSizeCode.Get(ItemAttrComb."Size Code") then begin
+                    TempSizeCode.Code := ItemAttrComb."Size Code";
+                    TempSizeCode.Insert();
+                end;
+            until ItemAttrComb.Next() = 0;
+
+        exit(TempSizeCode.Count);
+    end;
+
+    procedure GetDistinctColorsCount(): Integer
+    var
+        ItemAttrComb: Record "Item Attribute Combination";
+        TempColorCode: Record "Item Color" temporary;
+    begin
+        ItemAttrComb.SetRange("Item No.", "No.");
+        ItemAttrComb.SetFilter("Color Code", '<>%1', '');
+        if ItemAttrComb.FindSet() then
+            repeat
+                if not TempColorCode.Get(ItemAttrComb."Color Code") then begin
+                    TempColorCode.Code := ItemAttrComb."Color Code";
+                    TempColorCode.Insert();
+                end;
+            until ItemAttrComb.Next() = 0;
+
+        exit(TempColorCode.Count);
+    end;
+
+    procedure GetDistinctMaterialsCount(): Integer
+    var
+        ItemAttrComb: Record "Item Attribute Combination";
+        TempMaterialCode: Record "Item Material" temporary;
+    begin
+        ItemAttrComb.SetRange("Item No.", "No.");
+        ItemAttrComb.SetFilter("Material Code", '<>%1', '');
+        if ItemAttrComb.FindSet() then
+            repeat
+                if not TempMaterialCode.Get(ItemAttrComb."Material Code") then begin
+                    TempMaterialCode.Code := ItemAttrComb."Material Code";
+                    TempMaterialCode.Insert();
+                end;
+            until ItemAttrComb.Next() = 0;
+
+        exit(TempMaterialCode.Count);
     end;
 }
