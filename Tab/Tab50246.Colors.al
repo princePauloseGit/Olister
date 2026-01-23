@@ -1,9 +1,9 @@
-table 50247 "Item Material"
+table 50246 "Colors"
 {
-    Caption = 'Item Material';
+    Caption = 'Colors';
     DataClassification = CustomerContent;
-    LookupPageId = "Item Material List";
-    DrillDownPageId = "Item Material List";
+    LookupPageId = Colors;
+    DrillDownPageId = Colors;
 
     fields
     {

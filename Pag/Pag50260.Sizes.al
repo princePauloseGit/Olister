@@ -1,9 +1,9 @@
-page 50272 "Materials"
+page 50260 "Sizes"
 {
     ApplicationArea = All;
-    Caption = 'Materials';
+    Caption = 'Sizes';
     PageType = List;
-    SourceTable = "Materials";
+    SourceTable = "Sizes";
     UsageCategory = Lists;
 
     layout
@@ -15,12 +15,12 @@ page 50272 "Materials"
                 field("Code"; Rec."Code")
                 {
                     ApplicationArea = All;
-                    ToolTip = 'Specifies the material code.';
+                    ToolTip = 'Specifies the size code.';
                 }
                 field(Description; Rec.Description)
                 {
                     ApplicationArea = All;
-                    ToolTip = 'Specifies the material description.';
+                    ToolTip = 'Specifies the size description.';
                 }
             }
         }

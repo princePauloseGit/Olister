@@ -1,9 +1,9 @@
-page 50272 "Materials"
+page 50271 "Colors"
 {
     ApplicationArea = All;
-    Caption = 'Materials';
+    Caption = 'Colors';
     PageType = List;
-    SourceTable = "Materials";
+    SourceTable = "Colors";
     UsageCategory = Lists;
 
     layout
@@ -15,12 +15,12 @@ page 50272 "Materials"
                 field("Code"; Rec."Code")
                 {
                     ApplicationArea = All;
-                    ToolTip = 'Specifies the material code.';
+                    ToolTip = 'Specifies the color code.';
                 }
                 field(Description; Rec.Description)
                 {
                     ApplicationArea = All;
-                    ToolTip = 'Specifies the material description.';
+                    ToolTip = 'Specifies the color description.';
                 }
             }
         }

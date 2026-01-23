@@ -1,9 +1,9 @@
-table 50246 "Item Color"
+table 50245 "Sizes"
 {
-    Caption = 'Item Color';
+    Caption = 'Sizes';
     DataClassification = CustomerContent;
-    LookupPageId = "Item Color List";
-    DrillDownPageId = "Item Color List";
+    LookupPageId = Sizes;
+    DrillDownPageId = Sizes;
 
     fields
     {

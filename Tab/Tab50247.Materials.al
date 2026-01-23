@@ -1,9 +1,9 @@
-table 50245 "Item Size"
+table 50247 "Materials"
 {
-    Caption = 'Item Size';
+    Caption = 'Materials';
     DataClassification = CustomerContent;
-    LookupPageId = "Item Size List";
-    DrillDownPageId = "Item Size List";
+    LookupPageId = "Materials";
+    DrillDownPageId = "Materials";
 
     fields
     {

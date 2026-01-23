@@ -79,7 +79,7 @@
                 "server": "http://bcdevppm.westeurope.cloudapp.azure.com/",
                 "serverInstance": "BC",
                 "authentication": "UserPassword",
-                "startupObjectId": 50214,
+                "startupObjectId": 31,
                "port": 7149,
                 "startupObjectType": "Page",
                 "breakOnError": "All",

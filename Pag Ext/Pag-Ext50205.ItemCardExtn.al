@@ -41,6 +41,67 @@ pageextension 50205 ItemCardExtn extends "Item Card"
         }
         addafter(Item)
         {
+            group("Variant Attributes")
+            {
+                Caption = 'Variant Attributes';
+                field("Item Sizes Count"; GetItemSizesCount())
+                {
+                    ApplicationArea = All;
+                    Caption = 'Number of Sizes';
+                    Editable = false;
+                    ToolTip = 'Shows the number of sizes defined for this item.';
+                    Style = Strong;
+
+                    trigger OnDrillDown()
+                    var
+                        ItemSize: Record "Item Size";
+                        ItemSizesPage: Page "Item Sizes";
+                    begin
+                        ItemSize.SetRange("Item No.", Rec."No.");
+                        ItemSizesPage.SetTableView(ItemSize);
+                        ItemSizesPage.RunModal();
+                        CurrPage.Update(false);
+                    end;
+                }
+                field("Item Colors Count"; GetItemColorsCount())
+                {
+                    ApplicationArea = All;
+                    Caption = 'Number of Colors';
+                    Editable = false;
+                    ToolTip = 'Shows the number of colors defined for this item.';
+                    Style = Strong;
+
+                    trigger OnDrillDown()
+                    var
+                        ItemColor: Record "Item Color";
+                        ItemColorsPage: Page "Item Colors";
+                    begin
+                        ItemColor.SetRange("Item No.", Rec."No.");
+                        ItemColorsPage.SetTableView(ItemColor);
+                        ItemColorsPage.RunModal();
+                        CurrPage.Update(false);
+                    end;
+                }
+                field("Item Materials Count"; GetItemMaterialsCount())
+                {
+                    ApplicationArea = All;
+                    Caption = 'Number of Materials';
+                    Editable = false;
+                    ToolTip = 'Shows the number of materials defined for this item.';
+                    Style = Strong;
+
+                    trigger OnDrillDown()
+                    var
+                        ItemMaterial: Record "Item Material";
+                        ItemMaterialsPage: Page "Item Materials";
+                    begin
+                        ItemMaterial.SetRange("Item No.", Rec."No.");
+                        ItemMaterialsPage.SetTableView(ItemMaterial);
+                        ItemMaterialsPage.RunModal();
+                        CurrPage.Update(false);
+                    end;
+                }
+            }
             group("Product Details")
             {
                 Caption = 'Product Details';
@@ -95,54 +156,6 @@ pageextension 50205 ItemCardExtn extends "Item Card"
             field("Qty. on Sales Quote"; Rec."Qty. on Sales Quote")
             {
                 ApplicationArea = All;
-            }
-        }
-        addafter("Product Group Code")
-        {
-            field("No. of Sizes"; Rec."No. of Sizes")
-            {
-                ApplicationArea = All;
-                ToolTip = 'Specifies the number of distinct sizes for this item.';
-                DrillDown = true;
-
-                trigger OnDrillDown()
-                var
-                    ItemAttrComb: Record "Item Attribute Combination";
-                begin
-                    ItemAttrComb.SetRange("Item No.", Rec."No.");
-                    ItemAttrComb.SetFilter("Size Code", '<>%1', '');
-                    Page.Run(Page::"Item Attribute Combinations", ItemAttrComb);
-                end;
-            }
-            field("No. of Colors"; Rec."No. of Colors")
-            {
-                ApplicationArea = All;
-                ToolTip = 'Specifies the number of distinct colors for this item.';
-                DrillDown = true;
-
-                trigger OnDrillDown()
-                var
-                    ItemAttrComb: Record "Item Attribute Combination";
-                begin
-                    ItemAttrComb.SetRange("Item No.", Rec."No.");
-                    ItemAttrComb.SetFilter("Color Code", '<>%1', '');
-                    Page.Run(Page::"Item Attribute Combinations", ItemAttrComb);
-                end;
-            }
-            field("No. of Materials"; Rec."No. of Materials")
-            {
-                ApplicationArea = All;
-                ToolTip = 'Specifies the number of distinct materials for this item.';
-                DrillDown = true;
-
-                trigger OnDrillDown()
-                var
-                    ItemAttrComb: Record "Item Attribute Combination";
-                begin
-                    ItemAttrComb.SetRange("Item No.", Rec."No.");
-                    ItemAttrComb.SetFilter("Material Code", '<>%1', '');
-                    Page.Run(Page::"Item Attribute Combinations", ItemAttrComb);
-                end;
             }
         }
         modify("Attached Documents List")
@@ -360,6 +373,81 @@ pageextension 50205 ItemCardExtn extends "Item Card"
                     RunObject = page "Job List";
                 }
             }
+            group(VariantAttributes)
+            {
+                Caption = 'Variant Attributes';
+                Image = Dimensions;
+                
+                action(ManageItemSizes)
+                {
+                    Caption = 'Manage Item Sizes';
+                    ApplicationArea = All;
+                    Image = Dimensions;
+                    ToolTip = 'Manage sizes for this item.';
+
+                    trigger OnAction()
+                    var
+                        ItemSize: Record "Item Size";
+                        ItemSizesPage: Page "Item Sizes";
+                    begin
+                        ItemSize.SetRange("Item No.", Rec."No.");
+                        ItemSizesPage.SetTableView(ItemSize);
+                        ItemSizesPage.RunModal();
+                        CurrPage.Update(false);
+                    end;
+                }
+                action(ManageItemColors)
+                {
+                    Caption = 'Manage Item Colors';
+                    ApplicationArea = All;
+                    Image = ItemGroup;
+                    ToolTip = 'Manage colors for this item.';
+
+                    trigger OnAction()
+                    var
+                        ItemColor: Record "Item Color";
+                        ItemColorsPage: Page "Item Colors";
+                    begin
+                        ItemColor.SetRange("Item No.", Rec."No.");
+                        ItemColorsPage.SetTableView(ItemColor);
+                        ItemColorsPage.RunModal();
+                        CurrPage.Update(false);
+                    end;
+                }
+                action(ManageItemMaterials)
+                {
+                    Caption = 'Manage Item Materials';
+                    ApplicationArea = All;
+                    Image = Production;
+                    ToolTip = 'Manage materials for this item.';
+
+                    trigger OnAction()
+                    var
+                        ItemMaterial: Record "Item Material";
+                        ItemMaterialsPage: Page "Item Materials";
+                    begin
+                        ItemMaterial.SetRange("Item No.", Rec."No.");
+                        ItemMaterialsPage.SetTableView(ItemMaterial);
+                        ItemMaterialsPage.RunModal();
+                        CurrPage.Update(false);
+                    end;
+                }
+                action(GenerateItemVariants)
+                {
+                    Caption = 'Generate Item Variants';
+                    ApplicationArea = All;
+                    Image = CreateDocument;
+                    ToolTip = 'Generate all item variant combinations based on sizes, colors, and materials.';
+
+                    trigger OnAction()
+                    var
+                        ItemVariantMgt: Codeunit "Item Variant Management";
+                    begin
+                        ItemVariantMgt.GenerateItemVariants(Rec."No.");
+                        CurrPage.Update(false);
+                    end;
+                }
+            }
             group(Activity)
             {
                 action(OpenActivities)
@@ -538,13 +626,21 @@ pageextension 50205 ItemCardExtn extends "Item Card"
                 actionref(NextVersion_Promoted; NextVersion)
                 { }
             }
+            group(VariantAttributes_Promoted)
+            {
+                Caption = 'Variant Attributes';
+                Image = Dimensions;
+                actionref(ManageItemSizes_Promoted; ManageItemSizes)
+                { }
+                actionref(ManageItemColors_Promoted; ManageItemColors)
+                { }
+                actionref(ManageItemMaterials_Promoted; ManageItemMaterials)
+                { }
+                actionref(GenerateItemVariants_Promoted; GenerateItemVariants)
+                { }
+            }
         }
     }
-    trigger OnAfterGetCurrRecord()
-    begin
-        UpdateAttributeCounts();
-    end;
-
     procedure CopyAttributesToNextVersion(NextItem: Record Item)
     var
         ItemAttributeValMapping: Record "Item Attribute Value Mapping";
@@ -583,11 +679,27 @@ pageextension 50205 ItemCardExtn extends "Item Card"
             ItemVariant.ModifyAll("Item Id", ToItemId);
     end;
 
-    local procedure UpdateAttributeCounts()
+    local procedure GetItemSizesCount(): Integer
+    var
+        ItemSize: Record "Item Size";
     begin
-        Rec."No. of Sizes" := Rec.GetDistinctSizesCount();
-        Rec."No. of Colors" := Rec.GetDistinctColorsCount();
-        Rec."No. of Materials" := Rec.GetDistinctMaterialsCount();
+        ItemSize.SetRange("Item No.", Rec."No.");
+        exit(ItemSize.Count());
     end;
 
+    local procedure GetItemColorsCount(): Integer
+    var
+        ItemColor: Record "Item Color";
+    begin
+        ItemColor.SetRange("Item No.", Rec."No.");
+        exit(ItemColor.Count());
+    end;
+
+    local procedure GetItemMaterialsCount(): Integer
+    var
+        ItemMaterial: Record "Item Material";
+    begin
+        ItemMaterial.SetRange("Item No.", Rec."No.");
+        exit(ItemMaterial.Count());
+    end;
 }

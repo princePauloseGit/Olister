@@ -1,4 +1,4 @@
-page 50271 "Item Color List"
+page 50274 "Item Colors"
 {
     ApplicationArea = All;
     Caption = 'Item Colors';
@@ -12,12 +12,17 @@ page 50271 "Item Color List"
         {
             repeater(Group)
             {
-                field("Code"; Rec."Code")
+                field("Item No."; Rec."Item No.")
                 {
                     ApplicationArea = All;
-                    ToolTip = 'Specifies the color code.';
+                    ToolTip = 'Specifies the item number.';
                 }
-                field(Description; Rec.Description)
+                field("Color Code"; Rec."Color Code")
+                {
+                    ApplicationArea = All;
+                    ToolTip = 'Specifies the color code for this item.';
+                }
+                field("Color Description"; Rec."Color Description")
                 {
                     ApplicationArea = All;
                     ToolTip = 'Specifies the color description.';

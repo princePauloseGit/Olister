@@ -1,4 +1,4 @@
-page 50260 "Item Size List"
+page 50273 "Item Sizes"
 {
     ApplicationArea = All;
     Caption = 'Item Sizes';
@@ -12,12 +12,17 @@ page 50260 "Item Size List"
         {
             repeater(Group)
             {
-                field("Code"; Rec."Code")
+                field("Item No."; Rec."Item No.")
                 {
                     ApplicationArea = All;
-                    ToolTip = 'Specifies the size code.';
+                    ToolTip = 'Specifies the item number.';
                 }
-                field(Description; Rec.Description)
+                field("Size Code"; Rec."Size Code")
+                {
+                    ApplicationArea = All;
+                    ToolTip = 'Specifies the size code for this item.';
+                }
+                field("Size Description"; Rec."Size Description")
                 {
                     ApplicationArea = All;
                     ToolTip = 'Specifies the size description.';
