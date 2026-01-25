@@ -106,10 +106,12 @@ tableextension 50200 "Project EXT" extends Job
         }
         field(50212; "Vendor No."; Code[20])
         {
+            Caption = 'Supplier No.';
             TableRelation = Vendor;
         }
         field(50213; "Vendor Name"; Text[100])
         {
+            Caption = 'Supplier Name';
             FieldClass = FlowField;
             CalcFormula = lookup(Vendor.Name where("No." = field("Vendor No.")));
 

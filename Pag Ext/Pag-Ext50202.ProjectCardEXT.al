@@ -137,15 +137,15 @@ pageextension 50202 "Project Card EXT" extends "Job Card"
         moveafter(Blocked; status)
         addafter(JobTaskLines)
         {
-            group("Vendor Details")
+            group("Supplier Details")
             {
-                Caption = 'Vendor Details';
-                group("Project Vendors")
+                Caption = 'Supplier Details';
+                group("Project Suppliers")
                 {
                     part(ProjectVendors; "Project Vendor Subform")
                     {
                         ApplicationArea = all;
-                        Caption = 'Project Vendors';
+                        Caption = 'Project Suppliers';
                         SubPageLink = "Project No" = field("No.");
 
                     }
@@ -394,7 +394,7 @@ pageextension 50202 "Project Card EXT" extends "Job Card"
                 }
                 action(Vendors)
                 {
-                    Caption = 'Vendors';
+                    Caption = 'Suppliers';
                     ApplicationArea = all;
                     Image = Vendor;
                     RunObject = page "Vendor List";

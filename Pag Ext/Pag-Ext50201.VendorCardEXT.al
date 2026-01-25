@@ -18,7 +18,7 @@ pageextension 50201 "Vendor Card EXT" extends "Vendor Card"
             field("Type"; Rec."Type")
             {
                 ApplicationArea = All;
-                Caption = 'Vendor Type';
+                Caption = 'Supplier Type';
                 ToolTip = 'Specifies the type of customer.';
             }
             field(Status; Rec.Status)
@@ -32,6 +32,24 @@ pageextension 50201 "Vendor Card EXT" extends "Vendor Card"
                 ApplicationArea = All;
                 Caption = 'Category';
                 ToolTip = 'Specifies the category of the customer.';
+            }
+            field("Product Type"; Rec."Product Type")
+            {
+                ApplicationArea = All;
+                Caption = 'Product Type';
+                ToolTip = 'Specifies the product type associated with the supplier.';
+            }
+            field("Product Category"; Rec."Product Category")
+            {
+                ApplicationArea = All;
+                Caption = 'Product Category';
+                ToolTip = 'Specifies the product category associated with the supplier.';
+            }
+            field("Product Group"; Rec."Product Group")
+            {
+                ApplicationArea = All;
+                Caption = 'Product Group';
+                ToolTip = 'Specifies the product group associated with the supplier.';
             }
         }
 
@@ -245,7 +263,7 @@ pageextension 50201 "Vendor Card EXT" extends "Vendor Card"
                 }
                 action(Vendors)
                 {
-                    Caption = 'Vendors';
+                    Caption = 'Suppliers';
                     ApplicationArea = all;
                     Image = Vendor;
                     RunObject = page "Vendor List";
@@ -461,7 +479,7 @@ pageextension 50201 "Vendor Card EXT" extends "Vendor Card"
             }
             action(VendorItems)
             {
-                Caption = 'Vendor Items';
+                Caption = 'Supplier Items';
                 ApplicationArea = all;
                 Image = Item;
                 RunObject = page "Item List";

@@ -63,7 +63,21 @@ pageextension 50229 VendorListExt extends "Vendor List"
                 ApplicationArea = All;
                 Caption = 'Customer Type';
             }
-
+            field("Product Type"; Rec."Product Type")
+            {
+                ApplicationArea = All;
+                Caption = 'Product Type';
+            }
+            field("Product Category"; Rec."Product Category")
+            {
+                ApplicationArea = All;
+                Caption = 'Product Category';
+            }
+            field("Product Group"; Rec."Product Group")
+            {
+                ApplicationArea = All;
+                Caption = 'Product Group';
+            }
         }
 
         addlast(Control1)

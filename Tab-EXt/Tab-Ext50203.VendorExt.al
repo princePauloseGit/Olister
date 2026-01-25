@@ -7,9 +7,9 @@ tableextension 50203 VendorExt extends Vendor
 {
     fields
     {
-        field(50200; "Type"; Text[20])
+        field(50200; "Type"; Code[20])
         {
-            Caption = 'Vendor Type';
+            Caption = 'Supplier Type';
             DataClassification = CustomerContent;
             TableRelation = Type;
         }
@@ -84,8 +84,46 @@ tableextension 50203 VendorExt extends Vendor
             Caption = 'Last Interaction';
             Editable = false;
         }
-
-
-
+        field(50214; "Product Type"; Code[20])
+        {
+            Caption = 'Product Type';
+            DataClassification = CustomerContent;
+            TableRelation = "Product Type";
+            ValidateTableRelation = false;
+            trigger OnValidate()
+            var
+                ProductMgt: Codeunit "Product Hierarchy Mgt";
+            begin
+                ProductMgt.EnsureProductType("Product Type");
+            end;
+        }
+        field(50215; "Product Category"; Code[20])
+        {
+            Caption = 'Product Category';
+            DataClassification = CustomerContent;
+            TableRelation = "Product Category"."Product Category Code"
+                WHERE("Product Type Code" = FIELD("Product Type"));
+            ValidateTableRelation = false;
+            trigger OnValidate()
+            var
+                ProductMgt: Codeunit "Product Hierarchy Mgt";
+            begin
+                ProductMgt.EnsureProductCategory("Product Category", "Product Type");
+            end;
+        }
+        field(50216; "Product Group"; Code[20])
+        {
+            Caption = 'Product Group';
+            DataClassification = CustomerContent;
+            TableRelation = "Product Group"."Product Group Code"
+                WHERE("Product Category Code" = FIELD("Product Category"));
+            ValidateTableRelation = false;
+            trigger OnValidate()
+            var
+                ProductMgt: Codeunit "Product Hierarchy Mgt";
+            begin
+                ProductMgt.EnsureProductGroup("Product Group", "Product Category");
+            end;
+        }
     }
 }
